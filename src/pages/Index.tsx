@@ -77,7 +77,7 @@ const Index = () => {
   const totalCommission = totalRoomsCommission + totalToursCommission;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background flex flex-col min-h-screen">
       {/* Hero */}
       <div className="relative overflow-hidden">
         <div

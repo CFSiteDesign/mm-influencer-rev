@@ -5,6 +5,7 @@ import heartBadge from "@/assets/heart-badge.png";
 import lightningBadge from "@/assets/lightning-badge.png";
 import yellowBg from "@/assets/yellow-bg.jpg";
 import { Link } from "react-router-dom";
+import AnimatedStatsGraphic from "@/components/AnimatedStatsGraphic";
 
 interface RevenueRow {
   month: string;
@@ -79,42 +80,43 @@ const Index = () => {
   const totalCommission = totalRoomsCommission + totalToursCommission;
 
   return (
-    <div className="bg-background flex flex-col min-h-screen">
-      {/* Hero — compact when results showing */}
+    <div className="bg-background">
+      {/* Hero */}
       <div className="relative overflow-hidden">
         <div
-          className="absolute inset-0 opacity-15"
+          className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `url(${yellowBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background" />
 
-        <div className={`relative z-10 flex flex-col items-center justify-center px-5 text-center ${searched ? 'py-8' : 'py-16 md:py-24'}`}>
-          <div className="flex items-center gap-3 mb-3">
-            <img src={heartBadge} alt="" className={`${searched ? 'w-7 h-7' : 'w-10 h-10 md:w-14 md:h-14'} animate-bounce`} style={{ animationDuration: '3s' }} />
-            <h1 className={`${searched ? 'text-2xl' : 'text-3xl md:text-5xl lg:text-6xl'} font-bold font-display text-foreground tracking-tight`}>
+        <div className={`relative z-10 flex flex-col items-center justify-center px-5 text-center ${searched ? 'py-6' : 'pt-12 pb-4'}`}>
+          <div className="flex items-center gap-3 mb-2">
+            <img src={heartBadge} alt="" className={`${searched ? 'w-7 h-7' : 'w-9 h-9'} animate-bounce`} style={{ animationDuration: '3s' }} />
+            <h1 className={`${searched ? 'text-xl' : 'text-2xl md:text-5xl'} font-bold font-display text-foreground tracking-tight`}>
               Creator <span className="text-primary">Revenue</span>
             </h1>
-            <img src={lightningBadge} alt="" className={`${searched ? 'w-7 h-7' : 'w-10 h-10 md:w-14 md:h-14'} animate-bounce`} style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
+            <img src={lightningBadge} alt="" className={`${searched ? 'w-7 h-7' : 'w-9 h-9'} animate-bounce`} style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
           </div>
 
           {!searched && (
-            <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-sm">
-              Enter your unique creator code to check your commission earnings
+            <p className="text-muted-foreground text-sm mb-6 max-w-xs">
+              Enter your creator code to check your commission
             </p>
           )}
 
-          <div className={`flex w-full max-w-sm gap-2 ${searched ? 'mt-2' : ''}`}>
+          <div className={`flex w-full max-w-sm gap-2 ${searched ? 'mt-1' : ''}`}>
             <input
               value={code}
               onChange={e => setCode(e.target.value.toUpperCase())}
               onKeyDown={e => e.key === "Enter" && handleSearch()}
               placeholder="e.g. LEE10"
-              className="flex-1 rounded-xl bg-card/80 backdrop-blur border border-border px-4 py-3 text-foreground text-base font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              className="flex-1 rounded-xl bg-card border border-border px-4 py-3 text-foreground text-base font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
             />
             <button
               onClick={handleSearch}
               disabled={loading}
-              className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-display font-bold hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+              className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-display font-bold hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 shadow-md"
+              style={{ boxShadow: '0 4px 14px hsl(68 100% 45% / 0.3)' }}
             >
               <Search className="w-5 h-5" />
             </button>
@@ -123,13 +125,15 @@ const Index = () => {
           {notFound && (
             <p className="mt-3 text-destructive text-sm font-medium">Code not found. Please check and try again.</p>
           )}
+
+          {/* Animated graphic when no results */}
+          {!searched && <AnimatedStatsGraphic />}
         </div>
       </div>
 
       {/* Results */}
       {searched && (
-        <div className="px-4 md:px-6 pb-8 max-w-2xl mx-auto flex-1">
-          {/* Name + Earnings header */}
+        <div className="px-4 md:px-6 pb-6 max-w-2xl mx-auto">
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="w-4 h-4 text-primary" />
             <h2 className="text-lg font-bold font-display text-foreground">
@@ -139,7 +143,7 @@ const Index = () => {
 
           {/* Total Commission Banner */}
           <div className="relative overflow-hidden rounded-2xl p-4 mb-4" style={{ backgroundImage: `url(${yellowBg})`, backgroundSize: 'cover' }}>
-            <div className="absolute inset-0 bg-primary/20 backdrop-blur-sm" />
+            <div className="absolute inset-0 bg-primary/30 backdrop-blur-sm" />
             <div className="relative z-10 text-center">
               <p className="text-xs font-medium mb-0.5 text-primary-foreground/80">Total Commission</p>
               <p className="text-3xl md:text-4xl font-bold font-display text-primary-foreground">${totalCommission.toFixed(2)}</p>
@@ -165,7 +169,7 @@ const Index = () => {
           </div>
 
           {/* Tab Switcher */}
-          <div className="flex rounded-xl bg-muted/50 p-1 mb-4">
+          <div className="flex rounded-xl bg-muted p-1 mb-4">
             <button
               onClick={() => setActiveTab("rooms")}
               className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-display font-bold transition-all ${
@@ -191,10 +195,10 @@ const Index = () => {
           </div>
 
           {/* Table */}
-          <div className="rounded-xl border border-border overflow-hidden">
+          <div className="rounded-xl border border-border overflow-hidden bg-card">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-muted/50">
+                <tr className="bg-muted">
                   <th className="text-left px-3 py-2.5 text-xs font-medium text-muted-foreground">Month</th>
                   <th className="text-right px-3 py-2.5 text-xs font-medium text-muted-foreground">Bookings</th>
                   <th className="text-right px-3 py-2.5 text-xs font-medium text-muted-foreground">Your 10%</th>
@@ -202,7 +206,7 @@ const Index = () => {
               </thead>
               <tbody>
                 {revenue.map(r => (
-                  <tr key={r.month} className="border-t border-border/50 hover:bg-muted/30 transition-colors">
+                  <tr key={r.month} className="border-t border-border/50 hover:bg-muted/50 transition-colors">
                     <td className="px-3 py-2 text-foreground text-sm">{r.month.slice(0, 3)}</td>
                     <td className="px-3 py-2 text-right text-muted-foreground">
                       {activeTab === "rooms" ? (r.rooms_bookings || '-') : (r.tours_bookings || '-')}
@@ -222,8 +226,8 @@ const Index = () => {
       )}
 
       {/* Footer */}
-      <div className="border-t border-border/50 py-4 text-center mt-auto">
-        <Link to="/admin" className="text-muted-foreground/50 text-xs hover:text-muted-foreground transition-colors">
+      <div className="border-t border-border py-4 text-center">
+        <Link to="/admin" className="text-muted-foreground text-xs hover:text-foreground transition-colors">
           Admin
         </Link>
       </div>

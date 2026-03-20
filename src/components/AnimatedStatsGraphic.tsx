@@ -1,80 +1,90 @@
-import { ThumbsUp, Heart, TrendingUp, Star, Zap } from "lucide-react";
+import { Bed, Plane, DollarSign, TrendingUp, Users, Percent } from "lucide-react";
 
 const AnimatedStatsGraphic = () => {
+  // Monthly revenue bar data (simulated)
+  const bars = [35, 42, 38, 55, 48, 62, 70, 65, 78, 85, 72, 90];
+  const barLabels = ["J","F","M","A","M","J","J","A","S","O","N","D"];
+  const maxBar = Math.max(...bars);
+
   return (
-    <div className="relative w-full max-w-xs mx-auto h-48 overflow-hidden">
-      {/* Rising graph SVG */}
-      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 180" fill="none">
-        <path
-          d="M20 150 Q60 140 80 120 T140 90 T200 50 T260 25 T290 15"
-          stroke="hsl(var(--primary))"
-          strokeWidth="3"
-          strokeLinecap="round"
-          fill="none"
-          strokeDasharray="200"
-          style={{ animation: 'graph-draw 2s ease-out forwards' }}
-        />
-        <path
-          d="M20 150 Q60 140 80 120 T140 90 T200 50 T260 25 T290 15 V180 H20 Z"
-          fill="hsl(var(--primary) / 0.08)"
-        />
-        {/* Grid lines */}
-        {[40, 80, 120].map(y => (
-          <line key={y} x1="20" y1={y} x2="290" y2={y} stroke="hsl(var(--border))" strokeWidth="0.5" strokeDasharray="4 4" />
-        ))}
-      </svg>
-
-      {/* Floating icons */}
-      <div className="absolute top-6 left-6" style={{ animation: 'pulse-grow 2s ease-in-out infinite' }}>
-        <div className="bg-secondary/15 rounded-full p-2">
-          <Heart className="w-4 h-4 text-secondary" />
+    <div className="relative w-full mx-auto">
+      {/* Mini stat pills */}
+      <div className="flex gap-2 mb-3">
+        <div
+          className="flex items-center gap-1.5 rounded-lg bg-secondary/10 border border-secondary/20 px-2.5 py-1.5"
+          style={{ animation: "count-pop 0.5s ease-out forwards 0.3s", opacity: 0 }}
+        >
+          <Bed className="w-3.5 h-3.5 text-secondary" />
+          <span className="text-[11px] font-display font-bold text-secondary">142 Bookings</span>
+        </div>
+        <div
+          className="flex items-center gap-1.5 rounded-lg bg-accent/10 border border-accent/20 px-2.5 py-1.5"
+          style={{ animation: "count-pop 0.5s ease-out forwards 0.5s", opacity: 0 }}
+        >
+          <Plane className="w-3.5 h-3.5 text-accent" />
+          <span className="text-[11px] font-display font-bold text-accent">58 Tours</span>
         </div>
       </div>
 
-      <div className="absolute top-10 right-10" style={{ animation: 'pulse-grow 2.5s ease-in-out infinite 0.3s' }}>
-        <div className="bg-primary/15 rounded-full p-2">
-          <ThumbsUp className="w-4 h-4 text-primary-foreground" style={{ color: 'hsl(var(--primary))' }} />
+      {/* Bar chart */}
+      <div className="bg-card/50 rounded-xl p-3 mb-3 border border-border/50">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10px] font-display font-medium text-muted-foreground uppercase tracking-wider">Monthly Revenue</span>
+          <div className="flex items-center gap-1" style={{ animation: "count-pop 0.5s ease-out forwards 0.7s", opacity: 0 }}>
+            <TrendingUp className="w-3 h-3 text-primary" style={{ color: "hsl(var(--primary))" }} />
+            <span className="text-[11px] font-display font-bold" style={{ color: "hsl(var(--primary))" }}>+34%</span>
+          </div>
+        </div>
+        <div className="flex items-end gap-[3px] h-20">
+          {bars.map((val, i) => (
+            <div key={i} className="flex-1 flex flex-col items-center gap-1">
+              <div
+                className="w-full rounded-sm"
+                style={{
+                  height: `${(val / maxBar) * 100}%`,
+                  background: i >= 9
+                    ? "hsl(var(--primary))"
+                    : i >= 6
+                      ? "hsl(var(--primary) / 0.6)"
+                      : "hsl(var(--primary) / 0.25)",
+                  animation: `count-pop 0.4s ease-out forwards ${0.1 + i * 0.06}s`,
+                  opacity: 0,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-[3px] mt-1">
+          {barLabels.map((l, i) => (
+            <span key={i} className="flex-1 text-center text-[7px] text-muted-foreground font-display">{l}</span>
+          ))}
         </div>
       </div>
 
-      <div className="absolute bottom-12 left-12" style={{ animation: 'pulse-grow 3s ease-in-out infinite 0.6s' }}>
-        <div className="bg-accent/15 rounded-full p-2">
-          <Star className="w-4 h-4 text-accent" />
+      {/* Bottom row: commission + creators */}
+      <div className="grid grid-cols-2 gap-2">
+        <div
+          className="rounded-lg bg-card/50 border border-border/50 p-2.5"
+          style={{ animation: "count-pop 0.5s ease-out forwards 1s", opacity: 0 }}
+        >
+          <div className="flex items-center gap-1 mb-1">
+            <DollarSign className="w-3 h-3 text-secondary" />
+            <span className="text-[9px] font-display text-muted-foreground uppercase tracking-wider">Commission</span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-lg font-display font-bold text-secondary">$4,280</span>
+            <Percent className="w-2.5 h-2.5 text-muted-foreground" />
+          </div>
         </div>
-      </div>
-
-      <div className="absolute top-4 left-1/2" style={{ animation: 'pulse-grow 2.2s ease-in-out infinite 1s' }}>
-        <div className="bg-primary/15 rounded-full p-1.5">
-          <Zap className="w-3 h-3" style={{ color: 'hsl(var(--primary))' }} />
-        </div>
-      </div>
-
-      {/* Floating numbers */}
-      <div
-        className="absolute top-16 right-6 font-display font-bold text-lg text-secondary"
-        style={{ animation: 'count-pop 0.6s ease-out forwards 0.5s', opacity: 0 }}
-      >
-        +24%
-      </div>
-
-      <div
-        className="absolute bottom-8 right-16 font-display font-bold text-sm text-accent"
-        style={{ animation: 'count-pop 0.6s ease-out forwards 0.8s', opacity: 0 }}
-      >
-        1.2K
-      </div>
-
-      <div
-        className="absolute bottom-16 left-4 font-display font-bold text-xs text-muted-foreground"
-        style={{ animation: 'count-pop 0.6s ease-out forwards 1.1s', opacity: 0 }}
-      >
-        $420
-      </div>
-
-      {/* Rising arrow */}
-      <div className="absolute bottom-4 right-4" style={{ animation: 'pulse-grow 2s ease-in-out infinite 0.5s' }}>
-        <div className="bg-primary rounded-lg p-2 shadow-md" style={{ boxShadow: '0 4px 14px hsl(var(--primary) / 0.3)' }}>
-          <TrendingUp className="w-5 h-5 text-primary-foreground" />
+        <div
+          className="rounded-lg bg-card/50 border border-border/50 p-2.5"
+          style={{ animation: "count-pop 0.5s ease-out forwards 1.2s", opacity: 0 }}
+        >
+          <div className="flex items-center gap-1 mb-1">
+            <Users className="w-3 h-3 text-accent" />
+            <span className="text-[9px] font-display text-muted-foreground uppercase tracking-wider">Creators</span>
+          </div>
+          <span className="text-lg font-display font-bold text-accent">63+</span>
         </div>
       </div>
     </div>

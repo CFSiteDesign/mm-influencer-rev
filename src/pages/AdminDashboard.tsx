@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
-import { LogOut, Save, ChevronDown, ChevronUp } from "lucide-react";
+import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown } from "lucide-react";
 import lightningBadge from "@/assets/lightning-badge.png";
 import heartBadge from "@/assets/heart-badge.png";
 import { toast } from "sonner";

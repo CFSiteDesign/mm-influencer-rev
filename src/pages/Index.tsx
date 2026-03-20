@@ -97,7 +97,7 @@ const Index = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
 
-        <div className={`relative z-10 mx-auto flex w-full max-w-sm flex-col px-5 text-center ${searched ? "py-6" : "min-h-[calc(100vh-57px)] pt-12 pb-6"}`}>
+        <div className={`relative z-10 mx-auto flex w-full max-w-sm flex-col items-center px-5 text-center ${searched ? "py-6" : "min-h-[calc(100vh-57px)] justify-center py-6"}`}>
           <div className="flex items-center justify-center gap-3 mb-2">
             <img src={heartBadge} alt="" className={`${searched ? "w-7 h-7" : "w-9 h-9"} animate-bounce`} style={{ animationDuration: "3s" }} />
             <h1 className={`${searched ? "text-xl" : "text-2xl"} font-bold font-display text-foreground tracking-tight`}>
@@ -135,7 +135,7 @@ const Index = () => {
           )}
 
           {!searched && (
-            <div className="mt-2 flex flex-1 flex-col justify-end">
+            <div className="mt-6">
               <div
                 className="relative overflow-hidden rounded-[2rem] border border-primary/20 p-4 shadow-lg"
                 style={{

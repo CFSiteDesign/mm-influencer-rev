@@ -1,10 +1,16 @@
 import { Bed, Plane, DollarSign, TrendingUp, Users, Percent } from "lucide-react";
 
 const AnimatedStatsGraphic = () => {
-  // Monthly revenue bar data (simulated)
   const bars = [35, 42, 38, 55, 48, 62, 70, 65, 78, 85, 72, 90];
   const barLabels = ["J","F","M","A","M","J","J","A","S","O","N","D"];
   const maxBar = Math.max(...bars);
+
+  // Build SVG line points for the trend line across bar centers
+  const linePoints = bars.map((val, i) => {
+    const x = (i / (bars.length - 1)) * 100;
+    const y = 100 - (val / maxBar) * 100;
+    return `${x},${y}`;
+  }).join(" ");
 
   return (
     <div className="relative w-full mx-auto">
@@ -26,33 +32,55 @@ const AnimatedStatsGraphic = () => {
         </div>
       </div>
 
-      {/* Bar chart */}
+      {/* Bar chart with trend line */}
       <div className="bg-card/50 rounded-xl p-3 mb-3 border border-border/50">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[10px] font-display font-medium text-muted-foreground uppercase tracking-wider">Monthly Revenue</span>
           <div className="flex items-center gap-1" style={{ animation: "count-pop 0.5s ease-out forwards 0.7s", opacity: 0 }}>
-            <TrendingUp className="w-3 h-3 text-primary" style={{ color: "hsl(var(--primary))" }} />
+            <TrendingUp className="w-3 h-3" style={{ color: "hsl(var(--primary))" }} />
             <span className="text-[11px] font-display font-bold" style={{ color: "hsl(var(--primary))" }}>+34%</span>
           </div>
         </div>
-        <div className="flex items-end gap-[3px] h-20">
-          {bars.map((val, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center gap-1">
-              <div
-                className="w-full rounded-sm"
-                style={{
-                  height: `${(val / maxBar) * 100}%`,
-                  background: i >= 9
-                    ? "hsl(var(--primary))"
-                    : i >= 6
-                      ? "hsl(var(--primary) / 0.6)"
-                      : "hsl(var(--primary) / 0.25)",
-                  animation: `count-pop 0.4s ease-out forwards ${0.1 + i * 0.06}s`,
-                  opacity: 0,
-                }}
-              />
-            </div>
-          ))}
+        <div className="relative h-20">
+          {/* Bars */}
+          <div className="flex items-end gap-[3px] h-full relative z-10">
+            {bars.map((val, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
+                <div
+                  className="w-full rounded-sm"
+                  style={{
+                    height: `${(val / maxBar) * 100}%`,
+                    background: i >= 9
+                      ? "hsl(var(--primary))"
+                      : i >= 6
+                        ? "hsl(var(--primary) / 0.6)"
+                        : "hsl(var(--primary) / 0.25)",
+                    animation: `count-pop 0.4s ease-out forwards ${0.1 + i * 0.06}s`,
+                    opacity: 0,
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+          {/* Trend line overlay */}
+          <svg
+            className="absolute inset-0 w-full h-full z-20 pointer-events-none"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            <polyline
+              points={linePoints}
+              fill="none"
+              stroke="hsl(var(--secondary))"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+              strokeDasharray="300"
+              strokeDashoffset="300"
+              style={{ animation: "graph-draw 1.5s ease-out 0.8s forwards" }}
+            />
+          </svg>
         </div>
         <div className="flex gap-[3px] mt-1">
           {barLabels.map((l, i) => (
@@ -61,7 +89,7 @@ const AnimatedStatsGraphic = () => {
         </div>
       </div>
 
-      {/* Bottom row: commission + creators */}
+      {/* Bottom row */}
       <div className="grid grid-cols-2 gap-2">
         <div
           className="rounded-lg bg-card/50 border border-border/50 p-2.5"

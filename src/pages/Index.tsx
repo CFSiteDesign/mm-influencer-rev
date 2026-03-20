@@ -74,16 +74,18 @@ const Index = () => {
           <div className="w-full max-w-4xl flex flex-col md:flex-row items-center gap-8 md:gap-14">
             {/* Left: text + search */}
             <div className="flex-1 text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
-                <img src={heartBadge} alt="" className="w-9 h-9 md:w-11 md:h-11 animate-bounce" style={{ animationDuration: "3s" }} />
+              <div className="flex items-center justify-center md:justify-start gap-3 mb-1">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-display text-foreground tracking-tight">
                   Creator <span className="text-primary">Revenue</span>
                 </h1>
-                <img src={lightningBadge} alt="" className="w-9 h-9 md:w-11 md:h-11 animate-bounce" style={{ animationDuration: "2.5s", animationDelay: "0.5s" }} />
               </div>
-              <p className="text-muted-foreground text-sm md:text-base mb-6 max-w-md mx-auto md:mx-0">
-                Enter your unique creator code to check your commission earnings
-              </p>
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-5">
+                <img src={heartBadge} alt="" className="w-6 h-6" />
+                <p className="text-muted-foreground text-sm md:text-base">
+                  Check your commission earnings
+                </p>
+                <img src={lightningBadge} alt="" className="w-6 h-6" />
+              </div>
               <div className="flex gap-2 max-w-md mx-auto md:mx-0">
                 <input
                   value={code}

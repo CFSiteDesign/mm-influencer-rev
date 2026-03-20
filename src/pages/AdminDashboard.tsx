@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
-import { LogOut, Save, ChevronDown, ChevronUp } from "lucide-react";
+import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown } from "lucide-react";
 import lightningBadge from "@/assets/lightning-badge.png";
 import heartBadge from "@/assets/heart-badge.png";
 import { toast } from "sonner";
@@ -32,6 +32,8 @@ const AdminDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
   const [expandedCreator, setExpandedCreator] = useState<string | null>(null);
+  const [sortMode, setSortMode] = useState<"alpha" | "highest" | "lowest">("alpha");
+  const [creatorTotals, setCreatorTotals] = useState<Record<string, number>>({});
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -47,6 +49,15 @@ const AdminDashboard = () => {
   const loadCreators = async () => {
     const { data } = await supabase.from("creators").select("*").order("code");
     if (data) setCreators(data);
+
+    // Load all revenue to compute totals per creator
+    const { data: allRevenue } = await supabase.from("creator_monthly_revenue").select("creator_id, rooms_revenue, tours_revenue");
+    const totals: Record<string, number> = {};
+    allRevenue?.forEach((r: any) => {
+      const cid = r.creator_id;
+      totals[cid] = (totals[cid] || 0) + Number(r.rooms_revenue) * 0.1 + Number(r.tours_revenue) * 0.1;
+    });
+    setCreatorTotals(totals);
   };
 
   const selectCreator = async (creator: Creator) => {
@@ -127,10 +138,17 @@ const AdminDashboard = () => {
     navigate("/admin");
   };
 
-  const filteredCreators = creators.filter(c =>
-    c.code.toLowerCase().includes(searchFilter.toLowerCase()) ||
-    (c.name && c.name.toLowerCase().includes(searchFilter.toLowerCase()))
-  );
+  const filteredCreators = creators
+    .filter(c =>
+      c.code.toLowerCase().includes(searchFilter.toLowerCase()) ||
+      (c.name && c.name.toLowerCase().includes(searchFilter.toLowerCase()))
+    )
+    .sort((a, b) => {
+      if (sortMode === "alpha") return a.code.localeCompare(b.code);
+      const totalA = creatorTotals[a.id] || 0;
+      const totalB = creatorTotals[b.id] || 0;
+      return sortMode === "highest" ? totalB - totalA : totalA - totalB;
+    });
 
   if (!user) return null;
 
@@ -159,20 +177,43 @@ const AdminDashboard = () => {
             value={searchFilter}
             onChange={e => setSearchFilter(e.target.value)}
             placeholder="Filter creators..."
-            className="w-full rounded-lg bg-card border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+            className="w-full rounded-lg bg-card border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary mb-2"
           />
+          <div className="flex items-center gap-1 mb-3">
+            <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
+            {(["alpha", "highest", "lowest"] as const).map(mode => (
+              <button
+                key={mode}
+                onClick={() => setSortMode(mode)}
+                className={`px-2 py-1 rounded-md text-[11px] font-display font-medium transition-colors ${
+                  sortMode === mode
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {mode === "alpha" ? "A–Z" : mode === "highest" ? "Top $" : "Low $"}
+              </button>
+            ))}
+          </div>
           {filteredCreators.map(c => (
             <button
               key={c.id}
               onClick={() => selectCreator(c)}
-              className={`w-full text-left px-3 py-2 rounded-lg mb-1 transition-colors text-sm ${
+              className={`w-full text-left px-3 py-2 rounded-lg mb-1 transition-colors text-sm flex items-center justify-between ${
                 selectedCreator?.id === c.id
                   ? "bg-primary text-primary-foreground font-bold"
                   : "text-foreground hover:bg-muted"
               }`}
             >
-              <span className="font-display font-medium">{c.code}</span>
-              {c.name && <span className="text-xs ml-2 opacity-70">{c.name}</span>}
+              <div>
+                <span className="font-display font-medium">{c.code}</span>
+                {c.name && <span className="text-xs ml-2 opacity-70">{c.name}</span>}
+              </div>
+              {creatorTotals[c.id] > 0 && (
+                <span className={`text-[10px] font-display font-bold ${selectedCreator?.id === c.id ? "text-primary-foreground/80" : "text-secondary"}`}>
+                  ${creatorTotals[c.id].toFixed(0)}
+                </span>
+              )}
             </button>
           ))}
         </div>

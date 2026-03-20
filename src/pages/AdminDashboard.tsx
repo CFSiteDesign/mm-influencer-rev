@@ -49,6 +49,15 @@ const AdminDashboard = () => {
   const loadCreators = async () => {
     const { data } = await supabase.from("creators").select("*").order("code");
     if (data) setCreators(data);
+
+    // Load all revenue to compute totals per creator
+    const { data: allRevenue } = await supabase.from("creator_monthly_revenue").select("creator_id, rooms_revenue, tours_revenue");
+    const totals: Record<string, number> = {};
+    allRevenue?.forEach((r: any) => {
+      const cid = r.creator_id;
+      totals[cid] = (totals[cid] || 0) + Number(r.rooms_revenue) * 0.1 + Number(r.tours_revenue) * 0.1;
+    });
+    setCreatorTotals(totals);
   };
 
   const selectCreator = async (creator: Creator) => {

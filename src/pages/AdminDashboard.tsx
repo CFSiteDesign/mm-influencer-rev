@@ -138,10 +138,17 @@ const AdminDashboard = () => {
     navigate("/admin");
   };
 
-  const filteredCreators = creators.filter(c =>
-    c.code.toLowerCase().includes(searchFilter.toLowerCase()) ||
-    (c.name && c.name.toLowerCase().includes(searchFilter.toLowerCase()))
-  );
+  const filteredCreators = creators
+    .filter(c =>
+      c.code.toLowerCase().includes(searchFilter.toLowerCase()) ||
+      (c.name && c.name.toLowerCase().includes(searchFilter.toLowerCase()))
+    )
+    .sort((a, b) => {
+      if (sortMode === "alpha") return a.code.localeCompare(b.code);
+      const totalA = creatorTotals[a.id] || 0;
+      const totalB = creatorTotals[b.id] || 0;
+      return sortMode === "highest" ? totalB - totalA : totalA - totalB;
+    });
 
   if (!user) return null;
 

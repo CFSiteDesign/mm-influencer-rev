@@ -199,14 +199,21 @@ const AdminDashboard = () => {
             <button
               key={c.id}
               onClick={() => selectCreator(c)}
-              className={`w-full text-left px-3 py-2 rounded-lg mb-1 transition-colors text-sm ${
+              className={`w-full text-left px-3 py-2 rounded-lg mb-1 transition-colors text-sm flex items-center justify-between ${
                 selectedCreator?.id === c.id
                   ? "bg-primary text-primary-foreground font-bold"
                   : "text-foreground hover:bg-muted"
               }`}
             >
-              <span className="font-display font-medium">{c.code}</span>
-              {c.name && <span className="text-xs ml-2 opacity-70">{c.name}</span>}
+              <div>
+                <span className="font-display font-medium">{c.code}</span>
+                {c.name && <span className="text-xs ml-2 opacity-70">{c.name}</span>}
+              </div>
+              {creatorTotals[c.id] > 0 && (
+                <span className={`text-[10px] font-display font-bold ${selectedCreator?.id === c.id ? "text-primary-foreground/80" : "text-secondary"}`}>
+                  ${creatorTotals[c.id].toFixed(0)}
+                </span>
+              )}
             </button>
           ))}
         </div>

@@ -135,7 +135,7 @@ const Index = () => {
           )}
 
           {!searched && (
-            <div className="mt-2 flex flex-1 flex-col justify-end">
+            <div className="mt-6">
               <div
                 className="relative overflow-hidden rounded-[2rem] border border-primary/20 p-4 shadow-lg"
                 style={{

@@ -6,44 +6,44 @@
 
 @layer base {
   :root {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 96%;
+    --background: 40 30% 96%;
+    --foreground: 30 10% 15%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 96%;
+    --card: 40 25% 92%;
+    --card-foreground: 30 10% 15%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 40 25% 92%;
+    --popover-foreground: 30 10% 15%;
 
-    --primary: 68 100% 50%;
+    --primary: 68 100% 45%;
     --primary-foreground: 0 0% 7%;
 
-    --secondary: 320 80% 58%;
+    --secondary: 320 80% 55%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 40 15% 88%;
+    --muted-foreground: 30 8% 45%;
 
-    --accent: 270 60% 60%;
+    --accent: 270 60% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 68 100% 50%;
+    --border: 40 15% 82%;
+    --input: 40 15% 82%;
+    --ring: 68 100% 45%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 0 0% 96%;
-    --sidebar-primary: 68 100% 50%;
+    --sidebar-background: 40 25% 92%;
+    --sidebar-foreground: 30 10% 15%;
+    --sidebar-primary: 68 100% 45%;
     --sidebar-primary-foreground: 0 0% 7%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 96%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 68 100% 50%;
+    --sidebar-accent: 40 15% 88%;
+    --sidebar-accent-foreground: 30 10% 15%;
+    --sidebar-border: 40 15% 82%;
+    --sidebar-ring: 68 100% 45%;
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'DM Sans', sans-serif;
@@ -63,4 +63,25 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
   }
+}
+
+@keyframes float-up {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-80px) scale(0.8); opacity: 0; }
+}
+
+@keyframes pulse-grow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+@keyframes graph-draw {
+  0% { stroke-dashoffset: 200; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes count-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
 }

@@ -14,7 +14,77 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      creator_monthly_revenue: {
+        Row: {
+          created_at: string
+          creator_id: string
+          id: string
+          month: string
+          rooms_bookings: number
+          rooms_gna: number
+          rooms_revenue: number
+          tours_bookings: number
+          tours_revenue: number
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          id?: string
+          month: string
+          rooms_bookings?: number
+          rooms_gna?: number
+          rooms_revenue?: number
+          tours_bookings?: number
+          tours_revenue?: number
+          updated_at?: string
+          year?: number
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          id?: string
+          month?: string
+          rooms_bookings?: number
+          rooms_gna?: number
+          rooms_revenue?: number
+          tours_bookings?: number
+          tours_revenue?: number
+          updated_at?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_monthly_revenue_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creators: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

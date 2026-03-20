@@ -177,8 +177,24 @@ const AdminDashboard = () => {
             value={searchFilter}
             onChange={e => setSearchFilter(e.target.value)}
             placeholder="Filter creators..."
-            className="w-full rounded-lg bg-card border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+            className="w-full rounded-lg bg-card border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary mb-2"
           />
+          <div className="flex items-center gap-1 mb-3">
+            <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
+            {(["alpha", "highest", "lowest"] as const).map(mode => (
+              <button
+                key={mode}
+                onClick={() => setSortMode(mode)}
+                className={`px-2 py-1 rounded-md text-[11px] font-display font-medium transition-colors ${
+                  sortMode === mode
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {mode === "alpha" ? "A–Z" : mode === "highest" ? "Top $" : "Low $"}
+              </button>
+            ))}
+          </div>
           {filteredCreators.map(c => (
             <button
               key={c.id}

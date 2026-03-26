@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Sparkles } from "lucide-react";
+import { Search, Sparkles, Trophy } from "lucide-react";
 import heartBadge from "@/assets/heart-badge.png";
 import lightningBadge from "@/assets/lightning-badge.png";
 import mmPatternBg from "@/assets/mm-pattern-bg.jpg";

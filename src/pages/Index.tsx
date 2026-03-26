@@ -127,7 +127,10 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="border-t border-border py-4 text-center">
+        <div className="border-t border-border py-4 text-center flex items-center justify-center gap-4">
+          <Link to="/leaderboard" className="inline-flex items-center gap-1.5 text-primary text-sm font-display font-bold hover:brightness-110 transition-all">
+            <Trophy className="w-4 h-4" /> Leaderboard
+          </Link>
           <Link to="/admin" className="text-muted-foreground text-xs hover:text-foreground transition-colors">Admin</Link>
         </div>
       </div>

@@ -17,7 +17,7 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (username.trim() !== "MM-Rev-Admin") {
+    if (username.trim() !== "admin") {
       toast.error("Invalid username");
       setLoading(false);
       return;

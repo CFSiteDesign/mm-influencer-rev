@@ -106,15 +106,6 @@ const Leaderboard = () => {
           {/* Icon Key */}
           <div className="flex items-center justify-center gap-5 mt-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <Crown className="w-4 h-4 text-yellow-500" /> 1st Place
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Medal className="w-4 h-4 text-gray-400" /> 2nd Place
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Medal className="w-4 h-4 text-amber-600" /> 3rd Place
-            </span>
-            <span className="flex items-center gap-1.5">
               <img src={heartBadge} alt="" className="w-4 h-4" /> Rooms
             </span>
             <span className="flex items-center gap-1.5">

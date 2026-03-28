@@ -219,7 +219,7 @@ function PodiumCard({ rank, creator, height }: { rank: number; creator: CreatorS
       <span className="text-[10px] font-display font-bold text-muted-foreground uppercase tracking-wider mt-1">
         {rankLabel[rank as 1|2|3]}
       </span>
-      <p className="font-display font-bold text-foreground text-sm md:text-base mt-1 truncate w-full">
+      <p className="font-display font-bold text-foreground text-xs md:text-sm mt-1 w-full leading-tight break-words line-clamp-2">
         {creator.name || creator.code}
       </p>
       <div className="flex items-center gap-3 mt-1.5 text-[11px] text-muted-foreground">

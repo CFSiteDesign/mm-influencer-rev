@@ -130,10 +130,28 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="border-t border-border py-4 text-center flex items-center justify-center gap-4">
-          <Link to="/leaderboard" className="inline-flex items-center gap-1.5 text-primary text-sm font-display font-bold hover:brightness-110 transition-all">
-            <Trophy className="w-4 h-4" /> Leaderboard
+        {/* Leaderboard CTA */}
+        <div className="px-5 pb-6">
+          <Link
+            to="/leaderboard"
+            className="block max-w-4xl mx-auto rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-5 hover:border-primary/40 transition-all group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center group-hover:bg-primary/25 transition-colors">
+                  <Trophy className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-display font-bold text-foreground text-base">Creator Leaderboard</p>
+                  <p className="text-muted-foreground text-xs">See who's earning the most — compete and climb the ranks</p>
+                </div>
+              </div>
+              <span className="text-primary font-display font-bold text-sm group-hover:translate-x-1 transition-transform">View →</span>
+            </div>
           </Link>
+        </div>
+
+        <div className="border-t border-border py-3 text-center">
           <Link to="/admin" className="text-muted-foreground text-xs hover:text-foreground transition-colors">Admin</Link>
         </div>
       </div>

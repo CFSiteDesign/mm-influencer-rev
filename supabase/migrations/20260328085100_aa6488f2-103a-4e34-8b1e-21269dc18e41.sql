@@ -1,0 +1,1 @@
+ALTER TABLE public.creator_monthly_revenue ALTER COLUMN year SET DEFAULT 2026;

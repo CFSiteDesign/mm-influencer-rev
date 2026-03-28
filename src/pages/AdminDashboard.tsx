@@ -6,6 +6,7 @@ import lightningBadge from "@/assets/lightning-badge.png";
 import heartBadge from "@/assets/heart-badge.png";
 import { toast } from "sonner";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
+import PoweredByTheoroX from "@/components/PoweredByTheoroX";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -169,6 +170,7 @@ const AdminDashboard = () => {
           <button onClick={handleLogout} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
             <LogOut className="w-4 h-4" /> Logout
           </button>
+          <PoweredByTheoroX />
         </div>
       </div>
 

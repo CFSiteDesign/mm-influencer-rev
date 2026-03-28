@@ -6,11 +6,9 @@ import yellowBg from "@/assets/yellow-bg.jpg";
 import { toast } from "sonner";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 
-const ADMIN_EMAIL = "mm-rev-admin@madmonkey.internal";
-
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -18,14 +16,8 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (username.trim() !== "admin") {
-      toast.error("Invalid username");
-      setLoading(false);
-      return;
-    }
-
     const { error } = await supabase.auth.signInWithPassword({
-      email: ADMIN_EMAIL,
+      email: email.trim(),
       password,
     });
 
@@ -50,12 +42,12 @@ const AdminLogin = () => {
 
         <form onSubmit={handleSubmit} className="rounded-2xl bg-card border border-border p-6 space-y-4">
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">Username</label>
+            <label className="block text-sm text-muted-foreground mb-1">Email</label>
             <input
-              type="text"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              placeholder="Enter username"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="Enter email"
               required
               className="w-full rounded-lg bg-background border border-border px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />

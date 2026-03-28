@@ -150,9 +150,7 @@ const Index = () => {
           </Link>
         </div>
 
-        <div className="border-t border-border py-3 text-center">
-          <Link to="/admin" className="text-muted-foreground text-xs hover:text-foreground transition-colors">Admin</Link>
-        </div>
+        <PoweredByTheoroX />
       </div>
     );
   }

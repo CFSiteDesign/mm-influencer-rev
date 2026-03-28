@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import lightningBadge from "@/assets/lightning-badge.png";
 import yellowBg from "@/assets/yellow-bg.jpg";
 import { toast } from "sonner";
+import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 
 const ADMIN_EMAIL = "mm-rev-admin@madmonkey.internal";
 
@@ -42,7 +43,7 @@ const AdminLogin = () => {
 
       <div className="relative z-10 w-full max-w-sm px-4">
         <div className="flex flex-col items-center mb-8">
-          <img src={lightningBadge} alt="" className="w-16 h-16 mb-4" />
+          <img src={madMonkeyLogo} alt="Mad Monkey" className="h-14 mb-4" />
           <h1 className="text-3xl font-bold font-display text-foreground">Admin Login</h1>
           <p className="text-muted-foreground text-sm mt-2">Mad Monkey Revenue Team</p>
         </div>

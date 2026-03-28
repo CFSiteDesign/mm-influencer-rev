@@ -5,6 +5,7 @@ import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown } from "lucide-react"
 import lightningBadge from "@/assets/lightning-badge.png";
 import heartBadge from "@/assets/heart-badge.png";
 import { toast } from "sonner";
+import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -157,8 +158,9 @@ const AdminDashboard = () => {
       {/* Header */}
       <div className="border-b border-border px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img src={lightningBadge} alt="" className="w-8 h-8" />
-          <h1 className="text-xl font-bold font-display text-foreground">Admin Dashboard</h1>
+          <img src={madMonkeyLogo} alt="Mad Monkey" className="h-8" />
+          <span className="text-muted-foreground text-sm font-display">|</span>
+          <h1 className="text-xl font-bold font-display text-foreground">Admin</h1>
         </div>
         <div className="flex items-center gap-4">
           <Link to="/" className="text-muted-foreground text-sm hover:text-primary transition-colors">

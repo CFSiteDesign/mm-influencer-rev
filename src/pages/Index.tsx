@@ -6,6 +6,7 @@ import lightningBadge from "@/assets/lightning-badge.png";
 import mmPatternBg from "@/assets/mm-pattern-bg.jpg";
 import { Link } from "react-router-dom";
 import AnimatedStatsGraphic from "@/components/AnimatedStatsGraphic";
+import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 
 interface RevenueRow {
   month: string;
@@ -74,6 +75,7 @@ const Index = () => {
           <div className="w-full max-w-4xl flex flex-col md:flex-row items-center gap-8 md:gap-14">
             {/* Left: text + search */}
             <div className="flex-1 text-center md:text-left">
+              <img src={madMonkeyLogo} alt="Mad Monkey" className="h-10 md:h-12 mb-4 mx-auto md:mx-0" />
               <div className="flex items-center justify-center md:justify-start gap-3 mb-1">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-display text-foreground tracking-tight">
                   Creator <span className="text-primary">Revenue</span>

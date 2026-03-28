@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Trophy, Crown, Medal, Flame, ArrowLeft } from "lucide-react";
 import heartBadge from "@/assets/heart-badge.png";
 import lightningBadge from "@/assets/lightning-badge.png";
+import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 
 interface CreatorScore {
   code: string;
@@ -73,8 +74,7 @@ const Leaderboard = () => {
             <span className="text-sm font-display font-medium">Back</span>
           </Link>
           <div className="flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-primary" />
-            <span className="text-lg font-bold font-display text-foreground">Leaderboard</span>
+            <img src={madMonkeyLogo} alt="Mad Monkey" className="h-7" />
           </div>
           <div className="w-16" />
         </div>

@@ -7,6 +7,7 @@ import mmPatternBg from "@/assets/mm-pattern-bg.jpg";
 import { Link } from "react-router-dom";
 import AnimatedStatsGraphic from "@/components/AnimatedStatsGraphic";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
+import PoweredByTheoroX from "@/components/PoweredByTheoroX";
 
 interface RevenueRow {
   month: string;
@@ -248,11 +249,14 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="border-t border-border py-4 text-center flex items-center justify-center gap-4">
-        <Link to="/leaderboard" className="inline-flex items-center gap-1.5 text-primary text-sm font-display font-bold hover:brightness-110 transition-all">
-          <Trophy className="w-4 h-4" /> Leaderboard
-        </Link>
-        <Link to="/admin" className="text-muted-foreground text-xs hover:text-foreground transition-colors">Admin</Link>
+      <div className="border-t border-border py-4 text-center flex flex-col items-center gap-2">
+        <div className="flex items-center gap-4">
+          <Link to="/leaderboard" className="inline-flex items-center gap-1.5 text-primary text-sm font-display font-bold hover:brightness-110 transition-all">
+            <Trophy className="w-4 h-4" /> Leaderboard
+          </Link>
+          <Link to="/admin" className="text-muted-foreground text-xs hover:text-foreground transition-colors">Admin</Link>
+        </div>
+        <PoweredByTheoroX />
       </div>
     </div>
   );

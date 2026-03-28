@@ -6,6 +6,7 @@ import lightningBadge from "@/assets/lightning-badge.png";
 import heartBadge from "@/assets/heart-badge.png";
 import { toast } from "sonner";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
+import PoweredByTheoroX from "@/components/PoweredByTheoroX";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 

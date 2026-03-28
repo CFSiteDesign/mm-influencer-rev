@@ -5,6 +5,7 @@ import { Trophy, Crown, Medal, Flame, ArrowLeft } from "lucide-react";
 import heartBadge from "@/assets/heart-badge.png";
 import lightningBadge from "@/assets/lightning-badge.png";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
+import PoweredByTheoroX from "@/components/PoweredByTheoroX";
 
 interface CreatorScore {
   code: string;
@@ -157,10 +158,11 @@ const Leaderboard = () => {
         </div>
       </div>
 
-      <div className="border-t border-border py-4 text-center">
+      <div className="border-t border-border py-4 text-center flex flex-col items-center gap-1">
         <Link to="/" className="text-muted-foreground text-xs hover:text-foreground transition-colors font-display">
           ← Search your code
         </Link>
+        <PoweredByTheoroX />
       </div>
     </div>
   );

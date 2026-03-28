@@ -119,7 +119,6 @@ const Index = () => {
                 <div className="relative z-10">
                   <div className="mb-3 flex items-center justify-between">
                     <span className="rounded-full bg-background/70 px-3 py-1 text-[10px] font-display font-bold uppercase tracking-widest text-foreground backdrop-blur-sm">Live stats</span>
-                    <span className="rounded-full bg-card/75 px-3 py-1 text-[10px] font-display font-bold text-secondary backdrop-blur-sm">10% only</span>
                   </div>
                   <div className="rounded-2xl bg-background/70 p-2 backdrop-blur-sm">
                     <AnimatedStatsGraphic />

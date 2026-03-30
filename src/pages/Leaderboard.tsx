@@ -135,7 +135,7 @@ const Leaderboard = () => {
                   <PodiumCard rank={1} creator={topThree[0]} height="h-44 md:h-52" />
                   {/* 3rd place */}
                   {topThree[2] ? (
-                    <PodiumCard rank={3} creator={topThree[2]} height="h-32 md:h-36" />
+                    <PodiumCard rank={3} creator={topThree[2]} height="h-36 md:h-36" />
                   ) : <div />}
                 </div>
               )}

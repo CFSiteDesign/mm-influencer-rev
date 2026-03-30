@@ -188,15 +188,48 @@ const Index = () => {
             </h2>
           </div>
 
-          {/* Summary row: 3 cards */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-            <div className="rounded-xl bg-card border border-border p-4">
-              <div className="flex items-center gap-1.5 mb-1">
-                <img src={heartBadge} alt="" className="w-4 h-4" />
-                <p className="text-muted-foreground text-xs font-medium">Rooms & Dorms</p>
+          {/* Summary card */}
+          <div className="mb-6">
+            <div
+              className="relative overflow-hidden rounded-xl p-4"
+              style={{ backgroundImage: `url(${mmPatternBg})`, backgroundSize: "cover", backgroundPosition: "center" }}
+            >
+              <div className="absolute inset-0 bg-primary/25 backdrop-blur-sm" />
+              <div className="relative z-10 text-center">
+                <p className="text-xs font-medium mb-0.5 text-primary-foreground/80">Total Commission (10%)</p>
+                <p className="text-3xl font-bold font-display text-primary-foreground">${totalCommission.toFixed(2)}</p>
               </div>
-              <p className="text-2xl font-bold font-display text-secondary">${totalRoomsCommission.toFixed(2)}</p>
             </div>
+          </div>
+
+          {/* Table */}
+          <div className="rounded-xl border border-border overflow-hidden bg-card">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-muted">
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Month</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground">Bookings</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground">Beds</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground">Tours</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground">10%</th>
+                </tr>
+              </thead>
+              <tbody>
+                {revenue.map(row => {
+                  const commission = (row.rooms_revenue + row.tours_revenue) * 0.1;
+                  return (
+                    <tr key={row.month} className="border-t border-border/50 hover:bg-muted/50 transition-colors">
+                      <td className="px-4 py-2.5 text-foreground">{row.month}</td>
+                      <td className="px-4 py-2.5 text-right text-muted-foreground">{(row.rooms_bookings + row.tours_bookings) || "-"}</td>
+                      <td className="px-4 py-2.5 text-right text-secondary font-medium">{row.rooms_revenue > 0 ? `$${row.rooms_revenue.toFixed(2)}` : "-"}</td>
+                      <td className="px-4 py-2.5 text-right text-accent font-medium">{row.tours_revenue > 0 ? `$${row.tours_revenue.toFixed(2)}` : "-"}</td>
+                      <td className="px-4 py-2.5 text-right text-primary font-bold">{commission > 0 ? `$${commission.toFixed(2)}` : "-"}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
             <div className="rounded-xl bg-card border border-border p-4">
               <div className="flex items-center gap-1.5 mb-1">
                 <img src={lightningBadge} alt="" className="w-4 h-4" />

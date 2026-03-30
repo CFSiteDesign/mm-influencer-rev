@@ -63,9 +63,7 @@ const Index = () => {
     setActiveTab("rooms");
   };
 
-  const totalRoomsCommission = revenue.reduce((s, r) => s + r.rooms_revenue * 0.1, 0);
-  const totalToursCommission = revenue.reduce((s, r) => s + r.tours_revenue * 0.1, 0);
-  const totalCommission = totalRoomsCommission + totalToursCommission;
+  const totalCommission = revenue.reduce((s, r) => s + (r.rooms_revenue + r.tours_revenue) * 0.1, 0);
 
   /* ─── LANDING STATE ─── */
   if (!searched) {

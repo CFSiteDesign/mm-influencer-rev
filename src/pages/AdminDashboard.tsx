@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
-import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown } from "lucide-react";
+import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown, Plus } from "lucide-react";
 import lightningBadge from "@/assets/lightning-badge.png";
 import heartBadge from "@/assets/heart-badge.png";
 import { toast } from "sonner";
@@ -36,6 +36,9 @@ const AdminDashboard = () => {
   const [expandedCreator, setExpandedCreator] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<"alpha" | "highest" | "lowest">("alpha");
   const [creatorTotals, setCreatorTotals] = useState<Record<string, number>>({});
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newCode, setNewCode] = useState("");
+  const [newName, setNewName] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -140,6 +143,27 @@ const AdminDashboard = () => {
     navigate("/admin");
   };
 
+  const handleAddCreator = async () => {
+    const trimmedCode = newCode.trim().toUpperCase();
+    const trimmedName = newName.trim();
+    if (!trimmedCode) { toast.error("Code is required"); return; }
+
+    const { error } = await supabase.from("creators").insert({
+      code: trimmedCode,
+      name: trimmedName || null,
+    });
+
+    if (error) {
+      toast.error(error.message.includes("duplicate") ? "Code already exists" : "Failed to add creator");
+    } else {
+      toast.success(`Creator ${trimmedCode} added!`);
+      setNewCode("");
+      setNewName("");
+      setShowAddForm(false);
+      loadCreators();
+    }
+  };
+
   const filteredCreators = creators
     .filter(c =>
       c.code.toLowerCase().includes(searchFilter.toLowerCase()) ||
@@ -199,6 +223,38 @@ const AdminDashboard = () => {
               </button>
             ))}
           </div>
+
+          {/* Add Creator */}
+          {showAddForm ? (
+            <div className="mb-3 rounded-lg border border-primary/30 bg-card p-3 space-y-2">
+              <input
+                value={newCode}
+                onChange={e => setNewCode(e.target.value.toUpperCase())}
+                placeholder="Code (e.g. LEE10)"
+                maxLength={30}
+                className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <input
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+                placeholder="Name (optional)"
+                maxLength={100}
+                className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <div className="flex gap-2">
+                <button onClick={handleAddCreator} className="flex-1 rounded-md bg-primary text-primary-foreground py-1.5 text-xs font-display font-bold hover:opacity-90 transition-opacity">Add</button>
+                <button onClick={() => { setShowAddForm(false); setNewCode(""); setNewName(""); }} className="flex-1 rounded-md bg-muted text-muted-foreground py-1.5 text-xs font-display font-medium hover:text-foreground transition-colors">Cancel</button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="w-full mb-3 flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-border py-2 text-sm font-display font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add Creator
+            </button>
+          )}
+
           {filteredCreators.map(c => (
             <button
               key={c.id}

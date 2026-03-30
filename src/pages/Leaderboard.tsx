@@ -205,25 +205,25 @@ function PodiumCard({ rank, creator, height }: { rank: number; creator: CreatorS
   const rankLabel = { 1: "1st", 2: "2nd", 3: "3rd" } as const;
 
   return (
-    <div className={`${height} rounded-2xl bg-gradient-to-b ${colors[rank as 1|2|3]} border flex flex-col items-center justify-end p-3 md:p-4 text-center shadow-lg`}>
+    <div className={`${height} rounded-2xl bg-gradient-to-b ${colors[rank as 1|2|3]} border flex flex-col items-center justify-end p-2 md:p-4 text-center shadow-lg overflow-hidden`}>
       {icons[rank as 1|2|3]}
-      <span className="text-[10px] font-display font-bold text-muted-foreground uppercase tracking-wider mt-1">
+      <span className="text-[9px] md:text-[10px] font-display font-bold text-muted-foreground uppercase tracking-wider mt-1">
         {rankLabel[rank as 1|2|3]}
       </span>
-      <p className="font-display font-bold text-foreground text-xs md:text-sm mt-1 w-full leading-tight break-words line-clamp-2">
+      <p className="font-display font-bold text-foreground text-[11px] md:text-sm mt-1 w-full leading-tight break-words line-clamp-2">
         {creator.name || creator.code}
       </p>
-      <div className="flex items-center gap-3 mt-1.5 text-[11px] text-muted-foreground">
-        <span className="flex items-center gap-1">
-          <img src={heartBadge} alt="Rooms" className="w-3.5 h-3.5" />
+      <div className="flex flex-col md:flex-row items-center gap-0.5 md:gap-3 mt-1 text-[10px] md:text-[11px] text-muted-foreground">
+        <span className="flex items-center gap-0.5">
+          <img src={heartBadge} alt="Rooms" className="w-3 h-3" />
           ${creator.roomsCommission.toFixed(0)}
         </span>
-        <span className="flex items-center gap-1">
-          <img src={lightningBadge} alt="Tours" className="w-3.5 h-3.5" />
+        <span className="flex items-center gap-0.5">
+          <img src={lightningBadge} alt="Tours" className="w-3 h-3" />
           ${creator.toursCommission.toFixed(0)}
         </span>
       </div>
-      <p className="font-display font-bold text-primary text-lg md:text-xl mt-1">
+      <p className="font-display font-bold text-primary text-base md:text-xl mt-1">
         ${creator.total.toFixed(0)}
       </p>
     </div>

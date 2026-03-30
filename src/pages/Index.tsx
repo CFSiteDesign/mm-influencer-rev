@@ -230,9 +230,6 @@ const Index = () => {
               </tbody>
             </table>
           </div>
-            <div className="rounded-xl bg-card border border-border p-4">
-              <div className="flex items-center gap-1.5 mb-1">
-                <img src={lightningBadge} alt="" className="w-4 h-4" />
                 <p className="text-muted-foreground text-xs font-medium">Travel & Tours</p>
               </div>
               <p className="text-2xl font-bold font-display text-accent">${totalToursCommission.toFixed(2)}</p>

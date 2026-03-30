@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
-import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown, Plus } from "lucide-react";
+import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown, Plus, Trash2 } from "lucide-react";
 import lightningBadge from "@/assets/lightning-badge.png";
 import heartBadge from "@/assets/heart-badge.png";
 import { toast } from "sonner";
@@ -164,6 +164,24 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteCreator = async (creator: Creator) => {
+    if (!window.confirm(`Delete "${creator.code}"? This will also remove all their revenue data.`)) return;
+
+    await supabase.from("creator_monthly_revenue").delete().eq("creator_id", creator.id);
+    const { error } = await supabase.from("creators").delete().eq("id", creator.id);
+
+    if (error) {
+      toast.error("Failed to delete creator");
+    } else {
+      toast.success(`${creator.code} deleted`);
+      if (selectedCreator?.id === creator.id) {
+        setSelectedCreator(null);
+        setRevenue([]);
+      }
+      loadCreators();
+    }
+  };
+
   const filteredCreators = creators
     .filter(c =>
       c.code.toLowerCase().includes(searchFilter.toLowerCase()) ||
@@ -291,14 +309,22 @@ const AdminDashboard = () => {
                 <h2 className="text-2xl font-bold font-display text-foreground">
                   {selectedCreator.code} <span className="text-muted-foreground font-normal text-lg">({selectedCreator.name})</span>
                 </h2>
-                <button
-                  onClick={saveRevenue}
-                  disabled={saving}
-                  className="flex items-center gap-2 rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-display font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
-                >
-                  <Save className="w-4 h-4" />
-                  {saving ? "Saving..." : "Save All"}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDeleteCreator(selectedCreator)}
+                    className="flex items-center gap-1.5 rounded-xl border border-destructive/30 text-destructive px-4 py-2.5 text-sm font-display font-medium hover:bg-destructive/10 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" /> Delete
+                  </button>
+                  <button
+                    onClick={saveRevenue}
+                    disabled={saving}
+                    className="flex items-center gap-2 rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-display font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4" />
+                    {saving ? "Saving..." : "Save All"}
+                  </button>
+                </div>
               </div>
 
               {/* Rooms & Dorms */}

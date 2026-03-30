@@ -143,6 +143,27 @@ const AdminDashboard = () => {
     navigate("/admin");
   };
 
+  const handleAddCreator = async () => {
+    const trimmedCode = newCode.trim().toUpperCase();
+    const trimmedName = newName.trim();
+    if (!trimmedCode) { toast.error("Code is required"); return; }
+
+    const { error } = await supabase.from("creators").insert({
+      code: trimmedCode,
+      name: trimmedName || null,
+    });
+
+    if (error) {
+      toast.error(error.message.includes("duplicate") ? "Code already exists" : "Failed to add creator");
+    } else {
+      toast.success(`Creator ${trimmedCode} added!`);
+      setNewCode("");
+      setNewName("");
+      setShowAddForm(false);
+      loadCreators();
+    }
+  };
+
   const filteredCreators = creators
     .filter(c =>
       c.code.toLowerCase().includes(searchFilter.toLowerCase()) ||

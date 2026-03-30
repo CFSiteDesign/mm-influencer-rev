@@ -27,7 +27,6 @@ const Index = () => {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
-  const [activeTab, setActiveTab] = useState<"rooms" | "tours">("rooms");
 
   const handleSearch = async () => {
     if (!code.trim()) return;
@@ -60,21 +59,16 @@ const Index = () => {
     setRevenue(MONTHS.map(m => monthMap[m]));
     setSearched(true);
     setLoading(false);
-    setActiveTab("rooms");
   };
 
-  const totalRoomsCommission = revenue.reduce((s, r) => s + r.rooms_revenue * 0.1, 0);
-  const totalToursCommission = revenue.reduce((s, r) => s + r.tours_revenue * 0.1, 0);
-  const totalCommission = totalRoomsCommission + totalToursCommission;
+  const totalCommission = revenue.reduce((s, r) => s + (r.rooms_revenue + r.tours_revenue) * 0.1, 0);
 
   /* ─── LANDING STATE ─── */
   if (!searched) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        {/* Main area: side-by-side on md+, stacked on mobile */}
         <div className="flex-1 flex items-center justify-center px-5 py-10 md:py-0">
           <div className="w-full max-w-4xl flex flex-col md:flex-row items-center gap-8 md:gap-14">
-            {/* Left: text + search */}
             <div className="flex-1 text-center md:text-left">
               <img src={madMonkeyLogo} alt="Mad Monkey" className="h-10 md:h-12 mb-4 mx-auto md:mx-0" />
               <div className="flex items-center justify-center md:justify-start gap-3 mb-1">
@@ -109,7 +103,6 @@ const Index = () => {
               {notFound && <p className="mt-3 text-destructive text-sm font-medium">Code not found. Please check and try again.</p>}
             </div>
 
-            {/* Right: animated stats card */}
             <div className="w-full max-w-xs md:max-w-sm flex-shrink-0">
               <div
                 className="relative overflow-hidden rounded-3xl border border-primary/20 p-4 shadow-lg"
@@ -129,7 +122,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Leaderboard CTA */}
         <div className="px-5 pb-6">
           <Link
             to="/leaderboard"
@@ -190,48 +182,18 @@ const Index = () => {
             </h2>
           </div>
 
-          {/* Summary row: 3 cards */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-            <div className="rounded-xl bg-card border border-border p-4">
-              <div className="flex items-center gap-1.5 mb-1">
-                <img src={heartBadge} alt="" className="w-4 h-4" />
-                <p className="text-muted-foreground text-xs font-medium">Rooms & Dorms</p>
-              </div>
-              <p className="text-2xl font-bold font-display text-secondary">${totalRoomsCommission.toFixed(2)}</p>
-            </div>
-            <div className="rounded-xl bg-card border border-border p-4">
-              <div className="flex items-center gap-1.5 mb-1">
-                <img src={lightningBadge} alt="" className="w-4 h-4" />
-                <p className="text-muted-foreground text-xs font-medium">Travel & Tours</p>
-              </div>
-              <p className="text-2xl font-bold font-display text-accent">${totalToursCommission.toFixed(2)}</p>
-            </div>
+          {/* Summary card */}
+          <div className="mb-6">
             <div
-              className="relative overflow-hidden rounded-xl p-4 col-span-2 md:col-span-1"
+              className="relative overflow-hidden rounded-xl p-4"
               style={{ backgroundImage: `url(${mmPatternBg})`, backgroundSize: "cover", backgroundPosition: "center" }}
             >
               <div className="absolute inset-0 bg-primary/25 backdrop-blur-sm" />
-              <div className="relative z-10 text-center md:text-left">
-                <p className="text-xs font-medium mb-0.5 text-primary-foreground/80">Total Commission</p>
-                <p className="text-2xl md:text-3xl font-bold font-display text-primary-foreground">${totalCommission.toFixed(2)}</p>
+              <div className="relative z-10 text-center">
+                <p className="text-xs font-medium mb-0.5 text-primary-foreground/80">Total Commission (10%)</p>
+                <p className="text-3xl font-bold font-display text-primary-foreground">${totalCommission.toFixed(2)}</p>
               </div>
             </div>
-          </div>
-
-          {/* Tab switcher */}
-          <div className="flex rounded-xl bg-muted p-1 mb-4 max-w-xs">
-            <button
-              onClick={() => setActiveTab("rooms")}
-              className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-display font-bold transition-all ${activeTab === "rooms" ? "bg-card text-secondary shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              <img src={heartBadge} alt="" className="w-4 h-4" /> Rooms
-            </button>
-            <button
-              onClick={() => setActiveTab("tours")}
-              className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-display font-bold transition-all ${activeTab === "tours" ? "bg-card text-accent shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              <img src={lightningBadge} alt="" className="w-4 h-4" /> Tours
-            </button>
           </div>
 
           {/* Table */}
@@ -241,23 +203,24 @@ const Index = () => {
                 <tr className="bg-muted">
                   <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Month</th>
                   <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground">Bookings</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground">Your 10%</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground">Beds</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground">Tours</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground">10%</th>
                 </tr>
               </thead>
               <tbody>
-                {revenue.map(row => (
-                  <tr key={row.month} className="border-t border-border/50 hover:bg-muted/50 transition-colors">
-                    <td className="px-4 py-2.5 text-foreground">{row.month}</td>
-                    <td className="px-4 py-2.5 text-right text-muted-foreground">
-                      {activeTab === "rooms" ? (row.rooms_bookings || "-") : (row.tours_bookings || "-")}
-                    </td>
-                    <td className={`px-4 py-2.5 text-right font-medium ${activeTab === "rooms" ? "text-secondary" : "text-accent"}`}>
-                      {activeTab === "rooms"
-                        ? (row.rooms_revenue > 0 ? `$${(row.rooms_revenue * 0.1).toFixed(2)}` : "-")
-                        : (row.tours_revenue > 0 ? `$${(row.tours_revenue * 0.1).toFixed(2)}` : "-")}
-                    </td>
-                  </tr>
-                ))}
+                {revenue.map(row => {
+                  const commission = (row.rooms_revenue + row.tours_revenue) * 0.1;
+                  return (
+                    <tr key={row.month} className="border-t border-border/50 hover:bg-muted/50 transition-colors">
+                      <td className="px-4 py-2.5 text-foreground">{row.month}</td>
+                      <td className="px-4 py-2.5 text-right text-muted-foreground">{(row.rooms_bookings + row.tours_bookings) || "-"}</td>
+                      <td className="px-4 py-2.5 text-right text-secondary font-medium">{row.rooms_revenue > 0 ? `$${row.rooms_revenue.toFixed(2)}` : "-"}</td>
+                      <td className="px-4 py-2.5 text-right text-accent font-medium">{row.tours_revenue > 0 ? `$${row.tours_revenue.toFixed(2)}` : "-"}</td>
+                      <td className="px-4 py-2.5 text-right text-primary font-bold">{commission > 0 ? `$${commission.toFixed(2)}` : "-"}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -36,6 +36,9 @@ const AdminDashboard = () => {
   const [expandedCreator, setExpandedCreator] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<"alpha" | "highest" | "lowest">("alpha");
   const [creatorTotals, setCreatorTotals] = useState<Record<string, number>>({});
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newCode, setNewCode] = useState("");
+  const [newName, setNewName] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {

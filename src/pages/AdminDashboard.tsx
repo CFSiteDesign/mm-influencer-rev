@@ -223,6 +223,38 @@ const AdminDashboard = () => {
               </button>
             ))}
           </div>
+
+          {/* Add Creator */}
+          {showAddForm ? (
+            <div className="mb-3 rounded-lg border border-primary/30 bg-card p-3 space-y-2">
+              <input
+                value={newCode}
+                onChange={e => setNewCode(e.target.value.toUpperCase())}
+                placeholder="Code (e.g. LEE10)"
+                maxLength={30}
+                className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <input
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+                placeholder="Name (optional)"
+                maxLength={100}
+                className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <div className="flex gap-2">
+                <button onClick={handleAddCreator} className="flex-1 rounded-md bg-primary text-primary-foreground py-1.5 text-xs font-display font-bold hover:opacity-90 transition-opacity">Add</button>
+                <button onClick={() => { setShowAddForm(false); setNewCode(""); setNewName(""); }} className="flex-1 rounded-md bg-muted text-muted-foreground py-1.5 text-xs font-display font-medium hover:text-foreground transition-colors">Cancel</button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="w-full mb-3 flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-border py-2 text-sm font-display font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add Creator
+            </button>
+          )}
+
           {filteredCreators.map(c => (
             <button
               key={c.id}

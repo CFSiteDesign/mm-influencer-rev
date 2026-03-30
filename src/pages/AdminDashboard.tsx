@@ -164,6 +164,24 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteCreator = async (creator: Creator) => {
+    if (!window.confirm(`Delete "${creator.code}"? This will also remove all their revenue data.`)) return;
+
+    await supabase.from("creator_monthly_revenue").delete().eq("creator_id", creator.id);
+    const { error } = await supabase.from("creators").delete().eq("id", creator.id);
+
+    if (error) {
+      toast.error("Failed to delete creator");
+    } else {
+      toast.success(`${creator.code} deleted`);
+      if (selectedCreator?.id === creator.id) {
+        setSelectedCreator(null);
+        setRevenue([]);
+      }
+      loadCreators();
+    }
+  };
+
   const filteredCreators = creators
     .filter(c =>
       c.code.toLowerCase().includes(searchFilter.toLowerCase()) ||

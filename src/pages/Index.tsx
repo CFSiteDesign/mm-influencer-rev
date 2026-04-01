@@ -22,11 +22,13 @@ const MONTHS = ["January","February","March","April","May","June","July","August
 
 const Index = () => {
   const [code, setCode] = useState("");
+  const [creatorIdInput, setCreatorIdInput] = useState("");
   const [creatorName, setCreatorName] = useState("");
   const [revenue, setRevenue] = useState<RevenueRow[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [idMismatch, setIdMismatch] = useState(false);
 
   const handleSearch = async () => {
     if (!code.trim()) return;

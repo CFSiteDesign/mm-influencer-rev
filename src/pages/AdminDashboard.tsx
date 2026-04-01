@@ -40,6 +40,7 @@ const AdminDashboard = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newCode, setNewCode] = useState("");
   const [newName, setNewName] = useState("");
+  const [newCreatorId, setNewCreatorId] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {

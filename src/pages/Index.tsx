@@ -173,12 +173,19 @@ const Index = () => {
             <img src={heartBadge} alt="" className="w-6 h-6" />
             <span className="text-lg font-bold font-display text-foreground">Creator <span className="text-primary">Revenue</span></span>
           </div>
-          <div className="flex gap-2 flex-1 max-w-xs">
+          <div className="flex gap-2 flex-1 max-w-sm">
+            <input
+              value={creatorIdInput}
+              onChange={e => setCreatorIdInput(e.target.value.toUpperCase())}
+              onKeyDown={e => e.key === "Enter" && handleSearch()}
+              placeholder="ID"
+              className="w-16 rounded-lg bg-background border border-border px-2 py-2 text-sm text-foreground font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+            />
             <input
               value={code}
               onChange={e => setCode(e.target.value.toUpperCase())}
               onKeyDown={e => e.key === "Enter" && handleSearch()}
-              placeholder="e.g. LEE10"
+              placeholder="Code"
               className="flex-1 rounded-lg bg-background border border-border px-3 py-2 text-sm text-foreground font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
             <button onClick={handleSearch} disabled={loading} className="rounded-lg bg-primary text-primary-foreground px-3 py-2 font-bold hover:brightness-110 active:scale-95 transition-all disabled:opacity-50">

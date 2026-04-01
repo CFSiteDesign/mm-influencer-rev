@@ -22,25 +22,31 @@ const MONTHS = ["January","February","March","April","May","June","July","August
 
 const Index = () => {
   const [code, setCode] = useState("");
+  const [creatorIdInput, setCreatorIdInput] = useState("");
   const [creatorName, setCreatorName] = useState("");
   const [revenue, setRevenue] = useState<RevenueRow[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [idMismatch, setIdMismatch] = useState(false);
 
   const handleSearch = async () => {
-    if (!code.trim()) return;
+    if (!code.trim() || !creatorIdInput.trim()) return;
     setLoading(true);
     setNotFound(false);
+    setIdMismatch(false);
     setSearched(false);
 
     const { data: creator } = await supabase
       .from("creators")
-      .select("id, name, code")
+      .select("id, name, code, creator_id")
       .ilike("code", code.trim())
       .maybeSingle();
 
     if (!creator) { setNotFound(true); setLoading(false); return; }
+    if (!creator.creator_id || creator.creator_id.toUpperCase() !== creatorIdInput.trim().toUpperCase()) {
+      setIdMismatch(true); setLoading(false); return;
+    }
     setCreatorName(creator.name || creator.code);
 
     const { data: revenueData } = await supabase
@@ -83,24 +89,34 @@ const Index = () => {
                 </p>
                 <img src={lightningBadge} alt="" className="w-6 h-6" />
               </div>
-              <div className="flex gap-2 max-w-md mx-auto md:mx-0">
+              <div className="flex flex-col gap-2 max-w-md mx-auto md:mx-0">
                 <input
-                  value={code}
-                  onChange={e => setCode(e.target.value.toUpperCase())}
+                  value={creatorIdInput}
+                  onChange={e => setCreatorIdInput(e.target.value.toUpperCase())}
                   onKeyDown={e => e.key === "Enter" && handleSearch()}
-                  placeholder="e.g. LEE10"
-                  className="flex-1 rounded-xl bg-card border border-border px-4 py-3 text-foreground text-base font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  placeholder="Creator ID (e.g. CH001)"
+                  className="rounded-xl bg-card border border-border px-4 py-3 text-foreground text-base font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                 />
-                <button
-                  onClick={handleSearch}
-                  disabled={loading}
-                  className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-display font-bold hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
-                  style={{ boxShadow: "0 4px 14px hsl(68 100% 45% / 0.25)" }}
-                >
-                  <Search className="w-5 h-5" />
-                </button>
+                <div className="flex gap-2">
+                  <input
+                    value={code}
+                    onChange={e => setCode(e.target.value.toUpperCase())}
+                    onKeyDown={e => e.key === "Enter" && handleSearch()}
+                    placeholder="Code (e.g. LEE10)"
+                    className="flex-1 rounded-xl bg-card border border-border px-4 py-3 text-foreground text-base font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  />
+                  <button
+                    onClick={handleSearch}
+                    disabled={loading || !code.trim() || !creatorIdInput.trim()}
+                    className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-display font-bold hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                    style={{ boxShadow: "0 4px 14px hsl(68 100% 45% / 0.25)" }}
+                  >
+                    <Search className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
               {notFound && <p className="mt-3 text-destructive text-sm font-medium">Code not found. Please check and try again.</p>}
+              {idMismatch && <p className="mt-3 text-destructive text-sm font-medium">Creator ID doesn't match. Please check your credentials.</p>}
             </div>
 
             <div className="w-full max-w-xs md:max-w-sm flex-shrink-0">
@@ -157,12 +173,19 @@ const Index = () => {
             <img src={heartBadge} alt="" className="w-6 h-6" />
             <span className="text-lg font-bold font-display text-foreground">Creator <span className="text-primary">Revenue</span></span>
           </div>
-          <div className="flex gap-2 flex-1 max-w-xs">
+          <div className="flex gap-2 flex-1 max-w-sm">
+            <input
+              value={creatorIdInput}
+              onChange={e => setCreatorIdInput(e.target.value.toUpperCase())}
+              onKeyDown={e => e.key === "Enter" && handleSearch()}
+              placeholder="ID"
+              className="w-16 rounded-lg bg-background border border-border px-2 py-2 text-sm text-foreground font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+            />
             <input
               value={code}
               onChange={e => setCode(e.target.value.toUpperCase())}
               onKeyDown={e => e.key === "Enter" && handleSearch()}
-              placeholder="e.g. LEE10"
+              placeholder="Code"
               className="flex-1 rounded-lg bg-background border border-border px-3 py-2 text-sm text-foreground font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
             <button onClick={handleSearch} disabled={loading} className="rounded-lg bg-primary text-primary-foreground px-3 py-2 font-bold hover:brightness-110 active:scale-95 transition-all disabled:opacity-50">

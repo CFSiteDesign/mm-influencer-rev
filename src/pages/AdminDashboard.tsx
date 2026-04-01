@@ -14,6 +14,7 @@ interface Creator {
   id: string;
   code: string;
   name: string | null;
+  creator_id: string | null;
 }
 
 interface RevenueEntry {
@@ -39,6 +40,7 @@ const AdminDashboard = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newCode, setNewCode] = useState("");
   const [newName, setNewName] = useState("");
+  const [newCreatorId, setNewCreatorId] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -146,19 +148,23 @@ const AdminDashboard = () => {
   const handleAddCreator = async () => {
     const trimmedCode = newCode.trim().toUpperCase();
     const trimmedName = newName.trim();
+    const trimmedCreatorId = newCreatorId.trim().toUpperCase();
     if (!trimmedCode) { toast.error("Code is required"); return; }
+    if (!trimmedCreatorId) { toast.error("Creator ID is required"); return; }
 
     const { error } = await supabase.from("creators").insert({
       code: trimmedCode,
       name: trimmedName || null,
+      creator_id: trimmedCreatorId,
     });
 
     if (error) {
-      toast.error(error.message.includes("duplicate") ? "Code already exists" : "Failed to add creator");
+      toast.error(error.message.includes("duplicate") ? "Code or Creator ID already exists" : "Failed to add creator");
     } else {
       toast.success(`Creator ${trimmedCode} added!`);
       setNewCode("");
       setNewName("");
+      setNewCreatorId("");
       setShowAddForm(false);
       loadCreators();
     }
@@ -246,6 +252,13 @@ const AdminDashboard = () => {
           {showAddForm ? (
             <div className="mb-3 rounded-lg border border-primary/30 bg-card p-3 space-y-2">
               <input
+                value={newCreatorId}
+                onChange={e => setNewCreatorId(e.target.value.toUpperCase())}
+                placeholder="Creator ID (e.g. CH069)"
+                maxLength={10}
+                className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <input
                 value={newCode}
                 onChange={e => setNewCode(e.target.value.toUpperCase())}
                 placeholder="Code (e.g. LEE10)"
@@ -261,7 +274,7 @@ const AdminDashboard = () => {
               />
               <div className="flex gap-2">
                 <button onClick={handleAddCreator} className="flex-1 rounded-md bg-primary text-primary-foreground py-1.5 text-xs font-display font-bold hover:opacity-90 transition-opacity">Add</button>
-                <button onClick={() => { setShowAddForm(false); setNewCode(""); setNewName(""); }} className="flex-1 rounded-md bg-muted text-muted-foreground py-1.5 text-xs font-display font-medium hover:text-foreground transition-colors">Cancel</button>
+                <button onClick={() => { setShowAddForm(false); setNewCode(""); setNewName(""); setNewCreatorId(""); }} className="flex-1 rounded-md bg-muted text-muted-foreground py-1.5 text-xs font-display font-medium hover:text-foreground transition-colors">Cancel</button>
               </div>
             </div>
           ) : (
@@ -285,6 +298,7 @@ const AdminDashboard = () => {
             >
               <div>
                 <span className="font-display font-medium">{c.code}</span>
+                {c.creator_id && <span className="text-[10px] ml-1.5 opacity-50">{c.creator_id}</span>}
                 {c.name && <span className="text-xs ml-2 opacity-70">{c.name}</span>}
               </div>
               {creatorTotals[c.id] > 0 && (
@@ -307,7 +321,7 @@ const AdminDashboard = () => {
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold font-display text-foreground">
-                  {selectedCreator.code} <span className="text-muted-foreground font-normal text-lg">({selectedCreator.name})</span>
+                  {selectedCreator.code} <span className="text-muted-foreground font-normal text-lg">({selectedCreator.name})</span> <span className="text-muted-foreground font-normal text-sm">{selectedCreator.creator_id}</span>
                 </h2>
                 <div className="flex items-center gap-2">
                   <button

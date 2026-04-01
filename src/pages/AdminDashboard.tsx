@@ -252,6 +252,13 @@ const AdminDashboard = () => {
           {showAddForm ? (
             <div className="mb-3 rounded-lg border border-primary/30 bg-card p-3 space-y-2">
               <input
+                value={newCreatorId}
+                onChange={e => setNewCreatorId(e.target.value.toUpperCase())}
+                placeholder="Creator ID (e.g. CH069)"
+                maxLength={10}
+                className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <input
                 value={newCode}
                 onChange={e => setNewCode(e.target.value.toUpperCase())}
                 placeholder="Code (e.g. LEE10)"
@@ -267,7 +274,7 @@ const AdminDashboard = () => {
               />
               <div className="flex gap-2">
                 <button onClick={handleAddCreator} className="flex-1 rounded-md bg-primary text-primary-foreground py-1.5 text-xs font-display font-bold hover:opacity-90 transition-opacity">Add</button>
-                <button onClick={() => { setShowAddForm(false); setNewCode(""); setNewName(""); }} className="flex-1 rounded-md bg-muted text-muted-foreground py-1.5 text-xs font-display font-medium hover:text-foreground transition-colors">Cancel</button>
+                <button onClick={() => { setShowAddForm(false); setNewCode(""); setNewName(""); setNewCreatorId(""); }} className="flex-1 rounded-md bg-muted text-muted-foreground py-1.5 text-xs font-display font-medium hover:text-foreground transition-colors">Cancel</button>
               </div>
             </div>
           ) : (

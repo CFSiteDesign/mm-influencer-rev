@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { Trophy, Crown, Medal, Flame, ArrowLeft, Zap } from "lucide-react";
+import { Trophy, Crown, Medal, Flame, ArrowLeft, Zap, Search, ShieldCheck } from "lucide-react";
 import heartBadge from "@/assets/heart-badge.png";
 import lightningBadge from "@/assets/lightning-badge.png";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
@@ -18,11 +18,38 @@ interface CreatorScore {
 const CURRENT_MONTH = new Date().toLocaleString("en-US", { month: "long" });
 
 const Leaderboard = () => {
+  const [verified, setVerified] = useState(false);
+  const [creatorIdInput, setCreatorIdInput] = useState("");
+  const [codeInput, setCodeInput] = useState("");
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const [verifyError, setVerifyError] = useState("");
+
   const [leaders, setLeaders] = useState<CreatorScore[]>([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<"all" | "month">("all");
 
+  const handleVerify = async () => {
+    if (!creatorIdInput.trim() || !codeInput.trim()) return;
+    setVerifyLoading(true);
+    setVerifyError("");
+
+    const { data: creator } = await supabase
+      .from("creators")
+      .select("id, creator_id")
+      .ilike("code", codeInput.trim())
+      .maybeSingle();
+
+    if (!creator) { setVerifyError("Code not found."); setVerifyLoading(false); return; }
+    if (!creator.creator_id || creator.creator_id.toUpperCase() !== creatorIdInput.trim().toUpperCase()) {
+      setVerifyError("Creator ID doesn't match."); setVerifyLoading(false); return;
+    }
+
+    setVerified(true);
+    setVerifyLoading(false);
+  };
+
   useEffect(() => {
+    if (!verified) return;
     const load = async () => {
       setLoading(true);
       const { data: creators } = await supabase.from("creators").select("id, code, name");
@@ -53,8 +80,60 @@ const Leaderboard = () => {
       setLoading(false);
     };
     load();
-  }, [period]);
+  }, [period, verified]);
 
+  /* ─── VERIFICATION GATE ─── */
+  if (!verified) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-5">
+        <div className="w-full max-w-sm text-center">
+          <img src={madMonkeyLogo} alt="Mad Monkey" className="h-10 mx-auto mb-4" />
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <ShieldCheck className="w-6 h-6 text-primary" />
+            <h1 className="text-2xl font-bold font-display text-foreground">Verify Access</h1>
+          </div>
+          <p className="text-muted-foreground text-sm mb-6">Enter your Creator ID and Code to view the leaderboard.</p>
+
+          <div className="flex flex-col gap-2 mb-3">
+            <input
+              value={creatorIdInput}
+              onChange={e => setCreatorIdInput(e.target.value.toUpperCase())}
+              onKeyDown={e => e.key === "Enter" && handleVerify()}
+              placeholder="Creator ID (e.g. CH001)"
+              className="rounded-xl bg-card border border-border px-4 py-3 text-foreground text-base font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+            />
+            <div className="flex gap-2">
+              <input
+                value={codeInput}
+                onChange={e => setCodeInput(e.target.value.toUpperCase())}
+                onKeyDown={e => e.key === "Enter" && handleVerify()}
+                placeholder="Code (e.g. LEE10)"
+                className="flex-1 rounded-xl bg-card border border-border px-4 py-3 text-foreground text-base font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              />
+              <button
+                onClick={handleVerify}
+                disabled={verifyLoading || !creatorIdInput.trim() || !codeInput.trim()}
+                className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-display font-bold hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                style={{ boxShadow: "0 4px 14px hsl(68 100% 45% / 0.25)" }}
+              >
+                <Search className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+          {verifyError && <p className="text-destructive text-sm font-medium">{verifyError}</p>}
+
+          <Link to="/" className="inline-block mt-6 text-muted-foreground text-xs hover:text-foreground transition-colors font-display">
+            ← Back to search
+          </Link>
+        </div>
+        <div className="mt-8">
+          <PoweredByTheoroX />
+        </div>
+      </div>
+    );
+  }
+
+  /* ─── LEADERBOARD ─── */
   const topThree = leaders.slice(0, 3);
   const rest = leaders.slice(3);
 

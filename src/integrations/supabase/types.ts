@@ -68,18 +68,21 @@ export type Database = {
         Row: {
           code: string
           created_at: string
+          creator_id: string | null
           id: string
           name: string | null
         }
         Insert: {
           code: string
           created_at?: string
+          creator_id?: string | null
           id?: string
           name?: string | null
         }
         Update: {
           code?: string
           created_at?: string
+          creator_id?: string | null
           id?: string
           name?: string | null
         }

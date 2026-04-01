@@ -14,6 +14,7 @@ interface Creator {
   id: string;
   code: string;
   name: string | null;
+  creator_id: string | null;
 }
 
 interface RevenueEntry {

@@ -189,10 +189,12 @@ const AdminDashboard = () => {
   };
 
   const filteredCreators = creators
-    .filter(c =>
-      c.code.toLowerCase().includes(searchFilter.toLowerCase()) ||
-      (c.name && c.name.toLowerCase().includes(searchFilter.toLowerCase()))
-    )
+    .filter(c => {
+      const q = searchFilter.toLowerCase();
+      return c.code.toLowerCase().includes(q) ||
+        (c.name && c.name.toLowerCase().includes(q)) ||
+        (c.creator_id && c.creator_id.toLowerCase().includes(q));
+    })
     .sort((a, b) => {
       if (sortMode === "alpha") return a.code.localeCompare(b.code);
       const totalA = creatorTotals[a.id] || 0;

@@ -298,6 +298,7 @@ const AdminDashboard = () => {
             >
               <div>
                 <span className="font-display font-medium">{c.code}</span>
+                {c.creator_id && <span className="text-[10px] ml-1.5 opacity-50">{c.creator_id}</span>}
                 {c.name && <span className="text-xs ml-2 opacity-70">{c.name}</span>}
               </div>
               {creatorTotals[c.id] > 0 && (

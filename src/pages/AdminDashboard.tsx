@@ -148,19 +148,23 @@ const AdminDashboard = () => {
   const handleAddCreator = async () => {
     const trimmedCode = newCode.trim().toUpperCase();
     const trimmedName = newName.trim();
+    const trimmedCreatorId = newCreatorId.trim().toUpperCase();
     if (!trimmedCode) { toast.error("Code is required"); return; }
+    if (!trimmedCreatorId) { toast.error("Creator ID is required"); return; }
 
     const { error } = await supabase.from("creators").insert({
       code: trimmedCode,
       name: trimmedName || null,
+      creator_id: trimmedCreatorId,
     });
 
     if (error) {
-      toast.error(error.message.includes("duplicate") ? "Code already exists" : "Failed to add creator");
+      toast.error(error.message.includes("duplicate") ? "Code or Creator ID already exists" : "Failed to add creator");
     } else {
       toast.success(`Creator ${trimmedCode} added!`);
       setNewCode("");
       setNewName("");
+      setNewCreatorId("");
       setShowAddForm(false);
       loadCreators();
     }

@@ -31,18 +31,22 @@ const Index = () => {
   const [idMismatch, setIdMismatch] = useState(false);
 
   const handleSearch = async () => {
-    if (!code.trim()) return;
+    if (!code.trim() || !creatorIdInput.trim()) return;
     setLoading(true);
     setNotFound(false);
+    setIdMismatch(false);
     setSearched(false);
 
     const { data: creator } = await supabase
       .from("creators")
-      .select("id, name, code")
+      .select("id, name, code, creator_id")
       .ilike("code", code.trim())
       .maybeSingle();
 
     if (!creator) { setNotFound(true); setLoading(false); return; }
+    if (!creator.creator_id || creator.creator_id.toUpperCase() !== creatorIdInput.trim().toUpperCase()) {
+      setIdMismatch(true); setLoading(false); return;
+    }
     setCreatorName(creator.name || creator.code);
 
     const { data: revenueData } = await supabase

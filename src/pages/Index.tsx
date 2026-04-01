@@ -89,24 +89,34 @@ const Index = () => {
                 </p>
                 <img src={lightningBadge} alt="" className="w-6 h-6" />
               </div>
-              <div className="flex gap-2 max-w-md mx-auto md:mx-0">
+              <div className="flex flex-col gap-2 max-w-md mx-auto md:mx-0">
                 <input
-                  value={code}
-                  onChange={e => setCode(e.target.value.toUpperCase())}
+                  value={creatorIdInput}
+                  onChange={e => setCreatorIdInput(e.target.value.toUpperCase())}
                   onKeyDown={e => e.key === "Enter" && handleSearch()}
-                  placeholder="e.g. LEE10"
-                  className="flex-1 rounded-xl bg-card border border-border px-4 py-3 text-foreground text-base font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  placeholder="Creator ID (e.g. CH001)"
+                  className="rounded-xl bg-card border border-border px-4 py-3 text-foreground text-base font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                 />
-                <button
-                  onClick={handleSearch}
-                  disabled={loading}
-                  className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-display font-bold hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
-                  style={{ boxShadow: "0 4px 14px hsl(68 100% 45% / 0.25)" }}
-                >
-                  <Search className="w-5 h-5" />
-                </button>
+                <div className="flex gap-2">
+                  <input
+                    value={code}
+                    onChange={e => setCode(e.target.value.toUpperCase())}
+                    onKeyDown={e => e.key === "Enter" && handleSearch()}
+                    placeholder="Code (e.g. LEE10)"
+                    className="flex-1 rounded-xl bg-card border border-border px-4 py-3 text-foreground text-base font-display placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  />
+                  <button
+                    onClick={handleSearch}
+                    disabled={loading || !code.trim() || !creatorIdInput.trim()}
+                    className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-display font-bold hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                    style={{ boxShadow: "0 4px 14px hsl(68 100% 45% / 0.25)" }}
+                  >
+                    <Search className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
               {notFound && <p className="mt-3 text-destructive text-sm font-medium">Code not found. Please check and try again.</p>}
+              {idMismatch && <p className="mt-3 text-destructive text-sm font-medium">Creator ID doesn't match. Please check your credentials.</p>}
             </div>
 
             <div className="w-full max-w-xs md:max-w-sm flex-shrink-0">

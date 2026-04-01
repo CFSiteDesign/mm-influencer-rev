@@ -321,7 +321,7 @@ const AdminDashboard = () => {
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold font-display text-foreground">
-                  {selectedCreator.code} <span className="text-muted-foreground font-normal text-lg">({selectedCreator.name})</span>
+                  {selectedCreator.code} <span className="text-muted-foreground font-normal text-lg">({selectedCreator.name})</span> <span className="text-muted-foreground font-normal text-sm">{selectedCreator.creator_id}</span>
                 </h2>
                 <div className="flex items-center gap-2">
                   <button

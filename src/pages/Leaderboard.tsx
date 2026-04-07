@@ -55,21 +55,22 @@ const Leaderboard = () => {
       const { data: creators } = await supabase.from("creators").select("id, code, name");
       if (!creators?.length) { setLoading(false); return; }
 
-      const { data: revenue } = await supabase.from("creator_monthly_revenue").select("*");
+      const { data: revenue } = await supabase.from("creator_revenue").select("*");
 
       const map: Record<string, CreatorScore> = {};
       creators.forEach(c => {
-        map[c.id] = { code: c.code, name: c.name, roomsCommission: 0, toursCommission: 0, total: 0 };
+        map[c.code.toUpperCase()] = { code: c.code, name: c.name, roomsCommission: 0, toursCommission: 0, total: 0 };
       });
 
       revenue?.forEach((r: any) => {
-        if (!map[r.creator_id]) return;
+        const key = (r.creator_code || "").toUpperCase();
+        if (!map[key]) return;
         if (period === "month" && r.month !== CURRENT_MONTH) return;
-        const rooms = Number(r.rooms_revenue) * 0.1;
-        const tours = Number(r.tours_revenue) * 0.1;
-        map[r.creator_id].roomsCommission += rooms;
-        map[r.creator_id].toursCommission += tours;
-        map[r.creator_id].total += rooms + tours;
+        const rooms = (Number(r.rd_room_revenue) || 0) * 0.1;
+        const tours = (Number(r.hgl_revenue) || 0) * 0.1;
+        map[key].roomsCommission += rooms;
+        map[key].toursCommission += tours;
+        map[key].total += rooms + tours;
       });
 
       const sorted = Object.values(map)

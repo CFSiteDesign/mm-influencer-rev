@@ -18,6 +18,18 @@ interface RevenueRow {
   tours_revenue: number;
 }
 
+// Map creator_revenue columns to our internal format
+function mapRevenueRow(r: any): RevenueRow {
+  return {
+    month: r.month,
+    rooms_bookings: r.rd_bookings ?? 0,
+    rooms_gna: r.rd_gna ?? 0,
+    rooms_revenue: Number(r.rd_room_revenue) || 0,
+    tours_bookings: r.hgl_bookings ?? 0,
+    tours_revenue: Number(r.hgl_revenue) || 0,
+  };
+}
+
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 const Index = () => {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Database, ChevronDown, ChevronRight, Users, DollarSign, BarChart3 } from "lucide-react";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 

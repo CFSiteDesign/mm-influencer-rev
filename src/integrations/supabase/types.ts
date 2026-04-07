@@ -64,42 +64,6 @@ export type Database = {
           },
         ]
       }
-      creator_revenue: {
-        Row: {
-          creator_code: string
-          hgl_bookings: number | null
-          hgl_revenue: number | null
-          id: string
-          month: string
-          rd_bookings: number | null
-          rd_gna: number | null
-          rd_room_revenue: number | null
-          synced_at: string | null
-        }
-        Insert: {
-          creator_code: string
-          hgl_bookings?: number | null
-          hgl_revenue?: number | null
-          id?: string
-          month: string
-          rd_bookings?: number | null
-          rd_gna?: number | null
-          rd_room_revenue?: number | null
-          synced_at?: string | null
-        }
-        Update: {
-          creator_code?: string
-          hgl_bookings?: number | null
-          hgl_revenue?: number | null
-          id?: string
-          month?: string
-          rd_bookings?: number | null
-          rd_gna?: number | null
-          rd_room_revenue?: number | null
-          synced_at?: string | null
-        }
-        Relationships: []
-      }
       creators: {
         Row: {
           code: string

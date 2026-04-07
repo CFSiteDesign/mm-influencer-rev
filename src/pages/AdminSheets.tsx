@@ -28,9 +28,16 @@ interface CreatorSummary {
 const MONTH_ORDER = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 const AdminSheets = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState<RevenueRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) navigate("/admin");
+    });
+  }, [navigate]);
 
   useEffect(() => {
     const load = async () => {

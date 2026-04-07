@@ -79,7 +79,29 @@ Deno.serve(async (req) => {
   }
 
   if (rows.length === 0) {
-    return jsonResponse({ success: true, synced: 0, message: "No non-zero data to sync" });
+    return jsonResponse({ success: true, synced: 0, creatorsAdded: 0, message: "No non-zero data to sync" });
+  }
+
+  // Auto-add new creator codes to the creators table
+  const uniqueCodes = [...new Set(rows.map((r) => r.creator_code))];
+  const { data: existingCreators } = await supabase
+    .from("creators")
+    .select("code")
+    .in("code", uniqueCodes);
+
+  const existingCodes = new Set((existingCreators || []).map((c: any) => c.code));
+  const newCodes = uniqueCodes.filter((code) => !existingCodes.has(code));
+
+  let creatorsAdded = 0;
+  if (newCodes.length > 0) {
+    const newCreators = newCodes.map((code) => ({
+      code,
+      name: code.replace(/10$/, ""),
+    }));
+    const { error: creatorError } = await supabase.from("creators").insert(newCreators);
+    if (!creatorError) {
+      creatorsAdded = newCodes.length;
+    }
   }
 
   const { error } = await supabase
@@ -90,5 +112,5 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: error.message }, 500);
   }
 
-  return jsonResponse({ success: true, synced: rows.length });
+  return jsonResponse({ success: true, synced: rows.length, creatorsAdded });
 });

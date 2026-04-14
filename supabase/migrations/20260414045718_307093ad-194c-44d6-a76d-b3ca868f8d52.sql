@@ -1,1 +1,0 @@
-ALTER TABLE public.creators ADD COLUMN email text DEFAULT NULL;

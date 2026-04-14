@@ -41,7 +41,6 @@ const AdminDashboard = () => {
   const [newCode, setNewCode] = useState("");
   const [newName, setNewName] = useState("");
   const [newCreatorId, setNewCreatorId] = useState("");
-  const [newEmail, setNewEmail] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -153,12 +152,10 @@ const AdminDashboard = () => {
     if (!trimmedCode) { toast.error("Code is required"); return; }
     if (!trimmedCreatorId) { toast.error("Creator ID is required"); return; }
 
-    const trimmedEmail = newEmail.trim().toLowerCase();
     const { error } = await supabase.from("creators").insert({
       code: trimmedCode,
       name: trimmedName || null,
       creator_id: trimmedCreatorId,
-      email: trimmedEmail || null,
     });
 
     if (error) {
@@ -168,7 +165,6 @@ const AdminDashboard = () => {
       setNewCode("");
       setNewName("");
       setNewCreatorId("");
-      setNewEmail("");
       setShowAddForm(false);
       loadCreators();
     }
@@ -278,17 +274,9 @@ const AdminDashboard = () => {
                 maxLength={100}
                 className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
               />
-              <input
-                value={newEmail}
-                onChange={e => setNewEmail(e.target.value)}
-                placeholder="Email (optional)"
-                maxLength={255}
-                type="email"
-                className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              />
               <div className="flex gap-2">
                 <button onClick={handleAddCreator} className="flex-1 rounded-md bg-primary text-primary-foreground py-1.5 text-xs font-display font-bold hover:opacity-90 transition-opacity">Add</button>
-                <button onClick={() => { setShowAddForm(false); setNewCode(""); setNewName(""); setNewCreatorId(""); setNewEmail(""); }} className="flex-1 rounded-md bg-muted text-muted-foreground py-1.5 text-xs font-display font-medium hover:text-foreground transition-colors">Cancel</button>
+                <button onClick={() => { setShowAddForm(false); setNewCode(""); setNewName(""); setNewCreatorId(""); }} className="flex-1 rounded-md bg-muted text-muted-foreground py-1.5 text-xs font-display font-medium hover:text-foreground transition-colors">Cancel</button>
               </div>
             </div>
           ) : (

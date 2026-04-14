@@ -52,7 +52,7 @@ const Index = () => {
     const { data: creator } = await supabase
       .from("creators")
       .select("id, name, code, creator_id")
-      .ilike("code", code.trim())
+      .eq("code", code.trim().toUpperCase())
       .maybeSingle();
 
     if (!creator) { setNotFound(true); setLoading(false); return; }

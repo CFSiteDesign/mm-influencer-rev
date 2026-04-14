@@ -37,10 +37,6 @@ const AdminDashboard = () => {
   const [expandedCreator, setExpandedCreator] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<"alpha" | "highest" | "lowest">("alpha");
   const [creatorTotals, setCreatorTotals] = useState<Record<string, number>>({});
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newCode, setNewCode] = useState("");
-  const [newName, setNewName] = useState("");
-  const [newCreatorId, setNewCreatorId] = useState("");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -145,30 +141,6 @@ const AdminDashboard = () => {
     navigate("/admin");
   };
 
-  const handleAddCreator = async () => {
-    const trimmedCode = newCode.trim().toUpperCase();
-    const trimmedName = newName.trim();
-    const trimmedCreatorId = newCreatorId.trim().toUpperCase();
-    if (!trimmedCode) { toast.error("Code is required"); return; }
-    if (!trimmedCreatorId) { toast.error("Creator ID is required"); return; }
-
-    const { error } = await supabase.from("creators").insert({
-      code: trimmedCode,
-      name: trimmedName || null,
-      creator_id: trimmedCreatorId,
-    });
-
-    if (error) {
-      toast.error(error.message.includes("duplicate") ? "Code or Creator ID already exists" : "Failed to add creator");
-    } else {
-      toast.success(`Creator ${trimmedCode} added!`);
-      setNewCode("");
-      setNewName("");
-      setNewCreatorId("");
-      setShowAddForm(false);
-      loadCreators();
-    }
-  };
 
   const handleDeleteCreator = async (creator: Creator) => {
     if (!window.confirm(`Delete "${creator.code}"? This will also remove all their revenue data.`)) return;
@@ -250,43 +222,6 @@ const AdminDashboard = () => {
             ))}
           </div>
 
-          {/* Add Creator */}
-          {showAddForm ? (
-            <div className="mb-3 rounded-lg border border-primary/30 bg-card p-3 space-y-2">
-              <input
-                value={newCreatorId}
-                onChange={e => setNewCreatorId(e.target.value.toUpperCase())}
-                placeholder="Creator ID (e.g. CH069)"
-                maxLength={10}
-                className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <input
-                value={newCode}
-                onChange={e => setNewCode(e.target.value.toUpperCase())}
-                placeholder="Code (e.g. LEE10)"
-                maxLength={30}
-                className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <input
-                value={newName}
-                onChange={e => setNewName(e.target.value)}
-                placeholder="Name (optional)"
-                maxLength={100}
-                className="w-full rounded-md bg-background border border-border px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <div className="flex gap-2">
-                <button onClick={handleAddCreator} className="flex-1 rounded-md bg-primary text-primary-foreground py-1.5 text-xs font-display font-bold hover:opacity-90 transition-opacity">Add</button>
-                <button onClick={() => { setShowAddForm(false); setNewCode(""); setNewName(""); setNewCreatorId(""); }} className="flex-1 rounded-md bg-muted text-muted-foreground py-1.5 text-xs font-display font-medium hover:text-foreground transition-colors">Cancel</button>
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="w-full mb-3 flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-border py-2 text-sm font-display font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5" /> Add Creator
-            </button>
-          )}
 
           {filteredCreators.map(c => (
             <button

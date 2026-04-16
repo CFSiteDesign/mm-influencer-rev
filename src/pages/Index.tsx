@@ -16,6 +16,7 @@ interface RevenueRow {
   rooms_revenue: number;
   tours_bookings: number;
   tours_revenue: number;
+  events_revenue: number;
 }
 
 // Map creator_revenue columns to our internal format
@@ -27,6 +28,7 @@ function mapRevenueRow(r: any): RevenueRow {
     rooms_revenue: Number(r.rd_room_revenue) || 0,
     tours_bookings: r.hgl_bookings ?? 0,
     tours_revenue: Number(r.hgl_revenue) || 0,
+    events_revenue: Number(r.events_revenue) || 0,
   };
 }
 
@@ -67,7 +69,7 @@ const Index = () => {
       .ilike("creator_code", creator.code);
 
     const monthMap: Record<string, RevenueRow> = {};
-    MONTHS.forEach(m => { monthMap[m] = { month: m, rooms_bookings: 0, rooms_gna: 0, rooms_revenue: 0, tours_bookings: 0, tours_revenue: 0 }; });
+    MONTHS.forEach(m => { monthMap[m] = { month: m, rooms_bookings: 0, rooms_gna: 0, rooms_revenue: 0, tours_bookings: 0, tours_revenue: 0, events_revenue: 0 }; });
     revenueData?.forEach((r: any) => {
       if (monthMap[r.month]) {
         monthMap[r.month] = mapRevenueRow(r);
@@ -79,7 +81,8 @@ const Index = () => {
     setLoading(false);
   };
 
-  const totalCommission = revenue.reduce((s, r) => s + (r.rooms_revenue + r.tours_revenue) * 0.1, 0);
+  const isDutchies = code.trim().toUpperCase() === "DUTCHIES10";
+  const totalCommission = revenue.reduce((s, r) => s + (r.rooms_revenue + r.tours_revenue + (isDutchies ? r.events_revenue : 0)) * 0.1, 0);
 
   /* ─── LANDING STATE ─── */
   if (!searched) {
@@ -239,13 +242,14 @@ const Index = () => {
                   <th className="text-left px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Month</th>
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground whitespace-nowrap">Book.</th>
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Beds</th>
+                  {isDutchies && <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Events</th>}
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Tours</th>
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">10%</th>
                 </tr>
               </thead>
               <tbody>
                 {revenue.map(row => {
-                  const commission = (row.rooms_revenue + row.tours_revenue) * 0.1;
+                  const commission = (row.rooms_revenue + row.tours_revenue + (isDutchies ? row.events_revenue : 0)) * 0.1;
                   return (
                     <tr key={row.month} className="border-t border-border/50 hover:bg-muted/50 transition-colors">
                       <td className="px-2 md:px-4 py-2.5 text-foreground">
@@ -254,6 +258,7 @@ const Index = () => {
                       </td>
                       <td className="px-2 md:px-4 py-2.5 text-right text-muted-foreground">{(row.rooms_bookings + row.tours_bookings) || "-"}</td>
                       <td className="px-2 md:px-4 py-2.5 text-right text-secondary font-medium">{row.rooms_revenue > 0 ? `$${row.rooms_revenue.toFixed(0)}` : "-"}</td>
+                      {isDutchies && <td className="px-2 md:px-4 py-2.5 text-right text-secondary font-medium">{row.events_revenue > 0 ? `$${row.events_revenue.toFixed(0)}` : "-"}</td>}
                       <td className="px-2 md:px-4 py-2.5 text-right text-accent font-medium">{row.tours_revenue > 0 ? `$${row.tours_revenue.toFixed(0)}` : "-"}</td>
                       <td className="px-2 md:px-4 py-2.5 text-right text-primary font-bold">{commission > 0 ? `$${commission.toFixed(2)}` : "-"}</td>
                     </tr>

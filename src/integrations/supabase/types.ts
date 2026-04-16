@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           created_at: string
           creator_id: string
+          events_revenue: number
           id: string
           month: string
           rooms_bookings: number
@@ -31,6 +32,7 @@ export type Database = {
         Insert: {
           created_at?: string
           creator_id: string
+          events_revenue?: number
           id?: string
           month: string
           rooms_bookings?: number
@@ -44,6 +46,7 @@ export type Database = {
         Update: {
           created_at?: string
           creator_id?: string
+          events_revenue?: number
           id?: string
           month?: string
           rooms_bookings?: number
@@ -67,6 +70,7 @@ export type Database = {
       creator_revenue: {
         Row: {
           creator_code: string
+          events_revenue: number | null
           hgl_bookings: number | null
           hgl_revenue: number | null
           id: string
@@ -78,6 +82,7 @@ export type Database = {
         }
         Insert: {
           creator_code: string
+          events_revenue?: number | null
           hgl_bookings?: number | null
           hgl_revenue?: number | null
           id?: string
@@ -89,6 +94,7 @@ export type Database = {
         }
         Update: {
           creator_code?: string
+          events_revenue?: number | null
           hgl_bookings?: number | null
           hgl_revenue?: number | null
           id?: string

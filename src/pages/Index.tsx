@@ -16,6 +16,7 @@ interface RevenueRow {
   rooms_revenue: number;
   tours_bookings: number;
   tours_revenue: number;
+  events_revenue: number;
 }
 
 // Map creator_revenue columns to our internal format
@@ -27,6 +28,7 @@ function mapRevenueRow(r: any): RevenueRow {
     rooms_revenue: Number(r.rd_room_revenue) || 0,
     tours_bookings: r.hgl_bookings ?? 0,
     tours_revenue: Number(r.hgl_revenue) || 0,
+    events_revenue: Number(r.events_revenue) || 0,
   };
 }
 
@@ -67,7 +69,7 @@ const Index = () => {
       .ilike("creator_code", creator.code);
 
     const monthMap: Record<string, RevenueRow> = {};
-    MONTHS.forEach(m => { monthMap[m] = { month: m, rooms_bookings: 0, rooms_gna: 0, rooms_revenue: 0, tours_bookings: 0, tours_revenue: 0 }; });
+    MONTHS.forEach(m => { monthMap[m] = { month: m, rooms_bookings: 0, rooms_gna: 0, rooms_revenue: 0, tours_bookings: 0, tours_revenue: 0, events_revenue: 0 }; });
     revenueData?.forEach((r: any) => {
       if (monthMap[r.month]) {
         monthMap[r.month] = mapRevenueRow(r);
@@ -79,7 +81,8 @@ const Index = () => {
     setLoading(false);
   };
 
-  const totalCommission = revenue.reduce((s, r) => s + (r.rooms_revenue + r.tours_revenue) * 0.1, 0);
+  const isDutchies = code.trim().toUpperCase() === "DUTCHIES10";
+  const totalCommission = revenue.reduce((s, r) => s + (r.rooms_revenue + r.tours_revenue + (isDutchies ? r.events_revenue : 0)) * 0.1, 0);
 
   /* ─── LANDING STATE ─── */
   if (!searched) {

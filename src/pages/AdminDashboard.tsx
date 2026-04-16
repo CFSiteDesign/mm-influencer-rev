@@ -24,6 +24,7 @@ interface RevenueEntry {
   rooms_revenue: number;
   tours_bookings: number;
   tours_revenue: number;
+  events_revenue: number;
 }
 
 const AdminDashboard = () => {
@@ -73,7 +74,7 @@ const AdminDashboard = () => {
 
     const monthMap: Record<string, RevenueEntry> = {};
     MONTHS.forEach(m => {
-      monthMap[m] = { month: m, rooms_bookings: 0, rooms_gna: 0, rooms_revenue: 0, tours_bookings: 0, tours_revenue: 0 };
+      monthMap[m] = { month: m, rooms_bookings: 0, rooms_gna: 0, rooms_revenue: 0, tours_bookings: 0, tours_revenue: 0, events_revenue: 0 };
     });
     data?.forEach((r: any) => {
       if (monthMap[r.month]) {
@@ -84,6 +85,7 @@ const AdminDashboard = () => {
           rooms_revenue: Number(r.rooms_revenue),
           tours_bookings: r.tours_bookings,
           tours_revenue: Number(r.tours_revenue),
+          events_revenue: Number(r.events_revenue) || 0,
         };
       }
     });
@@ -115,9 +117,10 @@ const AdminDashboard = () => {
           rooms_revenue: r.rooms_revenue,
           tours_bookings: r.tours_bookings,
           tours_revenue: r.tours_revenue,
+          events_revenue: r.events_revenue,
         }).eq("id", existing.id);
       } else {
-        const hasData = r.rooms_bookings || r.rooms_revenue || r.tours_bookings || r.tours_revenue;
+        const hasData = r.rooms_bookings || r.rooms_revenue || r.tours_bookings || r.tours_revenue || r.events_revenue;
         if (hasData) {
           await supabase.from("creator_monthly_revenue").insert({
             creator_id: selectedCreator.id,
@@ -127,6 +130,7 @@ const AdminDashboard = () => {
             rooms_revenue: r.rooms_revenue,
             tours_bookings: r.tours_bookings,
             tours_revenue: r.tours_revenue,
+            events_revenue: r.events_revenue,
           });
         }
       }

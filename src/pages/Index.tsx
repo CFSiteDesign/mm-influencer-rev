@@ -242,13 +242,14 @@ const Index = () => {
                   <th className="text-left px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Month</th>
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground whitespace-nowrap">Book.</th>
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Beds</th>
+                  {isDutchies && <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Events</th>}
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Tours</th>
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">10%</th>
                 </tr>
               </thead>
               <tbody>
                 {revenue.map(row => {
-                  const commission = (row.rooms_revenue + row.tours_revenue) * 0.1;
+                  const commission = (row.rooms_revenue + row.tours_revenue + (isDutchies ? row.events_revenue : 0)) * 0.1;
                   return (
                     <tr key={row.month} className="border-t border-border/50 hover:bg-muted/50 transition-colors">
                       <td className="px-2 md:px-4 py-2.5 text-foreground">
@@ -257,6 +258,7 @@ const Index = () => {
                       </td>
                       <td className="px-2 md:px-4 py-2.5 text-right text-muted-foreground">{(row.rooms_bookings + row.tours_bookings) || "-"}</td>
                       <td className="px-2 md:px-4 py-2.5 text-right text-secondary font-medium">{row.rooms_revenue > 0 ? `$${row.rooms_revenue.toFixed(0)}` : "-"}</td>
+                      {isDutchies && <td className="px-2 md:px-4 py-2.5 text-right text-secondary font-medium">{row.events_revenue > 0 ? `$${row.events_revenue.toFixed(0)}` : "-"}</td>}
                       <td className="px-2 md:px-4 py-2.5 text-right text-accent font-medium">{row.tours_revenue > 0 ? `$${row.tours_revenue.toFixed(0)}` : "-"}</td>
                       <td className="px-2 md:px-4 py-2.5 text-right text-primary font-bold">{commission > 0 ? `$${commission.toFixed(2)}` : "-"}</td>
                     </tr>

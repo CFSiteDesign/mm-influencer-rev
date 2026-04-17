@@ -51,6 +51,8 @@ Deno.serve(async (req) => {
     if (!creator.code || typeof creator.code !== "string") continue;
     if (!Array.isArray(creator.months)) continue;
 
+    const normalizedCode = creator.code.trim().toUpperCase();
+
     for (const m of creator.months) {
       if (!m.month || typeof m.month !== "string") continue;
 
@@ -66,7 +68,7 @@ Deno.serve(async (req) => {
       }
 
       rows.push({
-        creator_code: creator.code,
+        creator_code: normalizedCode,
         month: m.month,
         rd_bookings,
         rd_gna,

@@ -174,7 +174,10 @@ const AdminSheets = () => {
                         <span className="hidden md:block text-right tabular-nums text-muted-foreground">{m.rd_gna ?? 0}</span>
                         <span className="hidden md:block text-right tabular-nums">{fmt(m.rd_room_revenue ?? 0)}</span>
                         <span className="hidden md:block text-right tabular-nums">{m.hgl_bookings ?? 0}</span>
-                        <span className="text-right tabular-nums">{fmt(m.hgl_revenue ?? 0)}</span>
+                        <span className="hidden md:block text-right tabular-nums">{fmt(m.hgl_revenue ?? 0)}</span>
+                        <span className="md:hidden text-right tabular-nums font-medium">
+                          {fmt((m.rd_room_revenue ?? 0) + (m.hgl_revenue ?? 0))}
+                        </span>
                       </div>
                     ))}
                   </div>

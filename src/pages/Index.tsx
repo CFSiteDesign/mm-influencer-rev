@@ -76,6 +76,29 @@ const Index = () => {
       }
     });
 
+    // TEMP: For DUTCHIES10 only, also merge in manual edits from creator_monthly_revenue
+    if (creator.code.toUpperCase() === "DUTCHIES10") {
+      const { data: manualData } = await supabase
+        .from("creator_monthly_revenue")
+        .select("*")
+        .eq("creator_id", creator.id);
+
+      manualData?.forEach((r: any) => {
+        if (monthMap[r.month]) {
+          const existing = monthMap[r.month];
+          monthMap[r.month] = {
+            month: r.month,
+            rooms_bookings: existing.rooms_bookings + (r.rooms_bookings ?? 0),
+            rooms_gna: existing.rooms_gna + (r.rooms_gna ?? 0),
+            rooms_revenue: existing.rooms_revenue + (Number(r.rooms_revenue) || 0),
+            tours_bookings: existing.tours_bookings + (r.tours_bookings ?? 0),
+            tours_revenue: existing.tours_revenue + (Number(r.tours_revenue) || 0),
+            events_revenue: existing.events_revenue + (Number(r.events_revenue) || 0),
+          };
+        }
+      });
+    }
+
     setRevenue(MONTHS.map(m => monthMap[m]));
     setSearched(true);
     setLoading(false);

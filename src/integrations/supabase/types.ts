@@ -133,6 +133,45 @@ export type Database = {
         }
         Relationships: []
       }
+      revenue_history: {
+        Row: {
+          changed_at: string
+          creator_code: string | null
+          creator_id: string | null
+          id: string
+          month: string | null
+          new_values: Json | null
+          old_values: Json | null
+          operation: string
+          source_table: string
+          year: number | null
+        }
+        Insert: {
+          changed_at?: string
+          creator_code?: string | null
+          creator_id?: string | null
+          id?: string
+          month?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          operation: string
+          source_table: string
+          year?: number | null
+        }
+        Update: {
+          changed_at?: string
+          creator_code?: string | null
+          creator_id?: string | null
+          id?: string
+          month?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          operation?: string
+          source_table?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

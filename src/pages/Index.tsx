@@ -39,6 +39,7 @@ const Index = () => {
   const [creatorIdInput, setCreatorIdInput] = useState("");
   const [creatorName, setCreatorName] = useState("");
   const [revenue, setRevenue] = useState<RevenueRow[]>([]);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
@@ -67,6 +68,16 @@ const Index = () => {
       .from("creator_revenue")
       .select("*")
       .ilike("creator_code", creator.code);
+
+    // Track latest sync timestamp from Google Sheets
+    let latestSync: Date | null = null;
+    revenueData?.forEach((r: any) => {
+      if (r.synced_at) {
+        const d = new Date(r.synced_at);
+        if (!latestSync || d > latestSync) latestSync = d;
+      }
+    });
+    setLastSyncedAt(latestSync);
 
     const monthMap: Record<string, RevenueRow> = {};
     MONTHS.forEach(m => { monthMap[m] = { month: m, rooms_bookings: 0, rooms_gna: 0, rooms_revenue: 0, tours_bookings: 0, tours_revenue: 0, events_revenue: 0 }; });
@@ -119,6 +130,14 @@ const Index = () => {
   };
   const currentMonthCommission = commissionFor(currentMonthName);
   const lastMonthCommission = commissionFor(lastMonthName);
+  const lastSyncedLabel = lastSyncedAt
+    ? new Intl.DateTimeFormat("en-AU", {
+        timeZone: "Australia/Brisbane",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).format(lastSyncedAt)
+    : null;
 
   /* ─── LANDING STATE ─── */
   if (!searched) {
@@ -287,6 +306,9 @@ const Index = () => {
               <p className="text-[11px] font-normal text-white/90 mt-0.5">Total Commission (10%)</p>
               <p className="text-2xl md:text-3xl font-bold font-display text-white mt-1">${lastMonthCommission.toFixed(2)}</p>
               <p className="text-xs italic text-white/85 mt-1">Ready to invoice</p>
+              {lastSyncedLabel && (
+                <p className="text-[10px] text-white/75 mt-1">Updated: {lastSyncedLabel}</p>
+              )}
             </div>
           </div>
 

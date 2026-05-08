@@ -107,6 +107,19 @@ const Index = () => {
   const isDutchies = code.trim().toUpperCase() === "DUTCHIES10";
   const totalCommission = revenue.reduce((s, r) => s + (r.rooms_revenue + r.tours_revenue + (isDutchies ? r.events_revenue : 0)) * 0.1, 0);
 
+  // Compute current and previous month names using Australia/Brisbane timezone
+  const brisbaneNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Australia/Brisbane" }));
+  const currentMonthName = MONTHS[brisbaneNow.getMonth()];
+  const lastMonthIndex = brisbaneNow.getMonth() === 0 ? 11 : brisbaneNow.getMonth() - 1;
+  const lastMonthName = MONTHS[lastMonthIndex];
+  const commissionFor = (monthName: string) => {
+    const r = revenue.find(x => x.month === monthName);
+    if (!r) return 0;
+    return (r.rooms_revenue + r.tours_revenue + (isDutchies ? r.events_revenue : 0)) * 0.1;
+  };
+  const currentMonthCommission = commissionFor(currentMonthName);
+  const lastMonthCommission = commissionFor(lastMonthName);
+
   /* ─── LANDING STATE ─── */
   if (!searched) {
     return (

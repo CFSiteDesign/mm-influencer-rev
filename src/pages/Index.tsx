@@ -305,7 +305,6 @@ const Index = () => {
               </p>
               <p className="text-[11px] font-normal text-white/90 mt-0.5">Total Commission (10%)</p>
               <p className="text-2xl md:text-3xl font-bold font-display text-white mt-1">${lastMonthCommission.toFixed(2)}</p>
-              <p className="text-xs italic text-white/85 mt-1">Ready to invoice</p>
               {lastSyncedLabel && (
                 <p className="text-[10px] text-white/75 mt-1">Updated: {lastSyncedLabel}</p>
               )}

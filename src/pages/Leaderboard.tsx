@@ -246,7 +246,7 @@ const Leaderboard = () => {
                           </span>
                         </div>
                       </div>
-                      <p className="font-display font-bold text-primary text-base" style={{ WebkitTextStroke: "1px #000", textShadow: "0 0 2px #000" }}>
+                      <p className="font-display font-bold text-black text-base">
                         ${creator.total.toFixed(2)}
                       </p>
                     </div>
@@ -303,7 +303,7 @@ function PodiumCard({ rank, creator, height }: { rank: number; creator: CreatorS
           ${creator.toursCommission.toFixed(0)}
         </span>
       </div>
-      <p className="font-display font-bold text-primary text-base md:text-xl mt-1" style={{ WebkitTextStroke: "1px #000", textShadow: "0 0 2px #000" }}>
+      <p className="font-display font-bold text-black text-base md:text-xl mt-1">
         ${creator.total.toFixed(0)}
       </p>
     </div>

@@ -107,6 +107,19 @@ const Index = () => {
   const isDutchies = code.trim().toUpperCase() === "DUTCHIES10";
   const totalCommission = revenue.reduce((s, r) => s + (r.rooms_revenue + r.tours_revenue + (isDutchies ? r.events_revenue : 0)) * 0.1, 0);
 
+  // Compute current and previous month names using Australia/Brisbane timezone
+  const brisbaneNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Australia/Brisbane" }));
+  const currentMonthName = MONTHS[brisbaneNow.getMonth()];
+  const lastMonthIndex = brisbaneNow.getMonth() === 0 ? 11 : brisbaneNow.getMonth() - 1;
+  const lastMonthName = MONTHS[lastMonthIndex];
+  const commissionFor = (monthName: string) => {
+    const r = revenue.find(x => x.month === monthName);
+    if (!r) return 0;
+    return (r.rooms_revenue + r.tours_revenue + (isDutchies ? r.events_revenue : 0)) * 0.1;
+  };
+  const currentMonthCommission = commissionFor(currentMonthName);
+  const lastMonthCommission = commissionFor(lastMonthName);
+
   /* ─── LANDING STATE ─── */
   if (!searched) {
     return (
@@ -252,8 +265,28 @@ const Index = () => {
               <div className="absolute inset-0 bg-primary/25 backdrop-blur-sm" />
               <div className="relative z-10 text-center">
                 <p className="text-xs font-medium mb-0.5 text-primary-foreground/80">Total Commission (10%)</p>
+                <p className="text-[11px] font-medium tracking-wider text-primary-foreground mb-1">(ALL TIME)</p>
                 <p className="text-3xl font-bold font-display text-primary-foreground">${totalCommission.toFixed(2)}</p>
               </div>
+            </div>
+          </div>
+
+          {/* Current vs Last month commission boxes */}
+          <div className="mb-6 grid grid-cols-2 gap-3">
+            <div className="rounded-xl p-4 bg-secondary text-secondary-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-white">
+                Current Month: {currentMonthName}
+              </p>
+              <p className="text-[11px] font-normal text-white/90 mt-0.5">Total Commission (10%)</p>
+              <p className="text-2xl md:text-3xl font-bold font-display text-white mt-1">${currentMonthCommission.toFixed(2)}</p>
+            </div>
+            <div className="rounded-xl p-4 bg-accent text-accent-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-white">
+                Last Month: {lastMonthName}
+              </p>
+              <p className="text-[11px] font-normal text-white/90 mt-0.5">Total Commission (10%)</p>
+              <p className="text-2xl md:text-3xl font-bold font-display text-white mt-1">${lastMonthCommission.toFixed(2)}</p>
+              <p className="text-xs italic text-white/85 mt-1">Ready to invoice</p>
             </div>
           </div>
 
@@ -283,7 +316,7 @@ const Index = () => {
                       <td className="px-2 md:px-4 py-2.5 text-right text-secondary font-medium">{row.rooms_revenue > 0 ? `$${row.rooms_revenue.toFixed(0)}` : "-"}</td>
                       {isDutchies && <td className="px-2 md:px-4 py-2.5 text-right text-secondary font-medium">{row.events_revenue > 0 ? `$${row.events_revenue.toFixed(0)}` : "-"}</td>}
                       <td className="px-2 md:px-4 py-2.5 text-right text-accent font-medium">{row.tours_revenue > 0 ? `$${row.tours_revenue.toFixed(0)}` : "-"}</td>
-                      <td className="px-2 md:px-4 py-2.5 text-right text-primary font-bold">{commission > 0 ? `$${commission.toFixed(2)}` : "-"}</td>
+                      <td className="px-2 md:px-4 py-2.5 text-right font-bold text-black">{commission > 0 ? `$${commission.toFixed(2)}` : "-"}</td>
                     </tr>
                   );
                 })}

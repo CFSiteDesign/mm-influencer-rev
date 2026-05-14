@@ -61,9 +61,10 @@ Deno.serve(async (req) => {
       const rd_room_revenue = Number(m.rd_room_revenue) || 0;
       const hgl_bookings = Number(m.hgl_bookings) || 0;
       const hgl_revenue = Number(m.hgl_revenue) || 0;
+      const events_revenue = Number(m.events_revenue) || 0;
 
       // Skip if all values are zero
-      if (rd_bookings === 0 && rd_gna === 0 && rd_room_revenue === 0 && hgl_bookings === 0 && hgl_revenue === 0) {
+      if (rd_bookings === 0 && rd_gna === 0 && rd_room_revenue === 0 && hgl_bookings === 0 && hgl_revenue === 0 && events_revenue === 0) {
         continue;
       }
 
@@ -75,6 +76,7 @@ Deno.serve(async (req) => {
         rd_room_revenue,
         hgl_bookings,
         hgl_revenue,
+        events_revenue,
         synced_at: new Date().toISOString(),
       });
     }

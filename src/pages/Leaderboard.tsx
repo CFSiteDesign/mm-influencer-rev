@@ -74,7 +74,7 @@ const Leaderboard = () => {
       });
 
       const sorted = Object.values(map)
-        .filter(c => c.total > 0)
+        .filter(c => period === "month" ? true : c.total > 0)
         .sort((a, b) => b.total - a.total);
 
       setLeaders(sorted);

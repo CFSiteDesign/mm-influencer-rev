@@ -1,0 +1,1 @@
+DELETE FROM public.creator_monthly_revenue WHERE creator_id = (SELECT id FROM public.creators WHERE code = 'DUTCHIES10');

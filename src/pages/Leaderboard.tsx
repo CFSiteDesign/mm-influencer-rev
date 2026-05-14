@@ -58,8 +58,10 @@ const Leaderboard = () => {
       const { data: revenue } = await supabase.from("creator_revenue").select("*");
 
       const map: Record<string, CreatorScore> = {};
+      const idToCode: Record<string, string> = {};
       creators.forEach(c => {
         map[c.code.toUpperCase()] = { code: c.code, name: c.name, roomsCommission: 0, toursCommission: 0, total: 0 };
+        idToCode[c.id] = c.code.toUpperCase();
       });
 
       revenue?.forEach((r: any) => {
@@ -68,10 +70,29 @@ const Leaderboard = () => {
         if (period === "month" && r.month !== CURRENT_MONTH) return;
         const rooms = (Number(r.rd_room_revenue) || 0) * 0.1;
         const tours = (Number(r.hgl_revenue) || 0) * 0.1;
+        const events = key === "DUTCHIES10" ? (Number(r.events_revenue) || 0) * 0.1 : 0;
         map[key].roomsCommission += rooms;
         map[key].toursCommission += tours;
-        map[key].total += rooms + tours;
+        map[key].total += rooms + tours + events;
       });
+
+      // Merge manual edits for DUTCHIES10 from creator_monthly_revenue
+      const dutchies = creators.find(c => c.code.toUpperCase() === "DUTCHIES10");
+      if (dutchies && map["DUTCHIES10"]) {
+        const { data: manual } = await supabase
+          .from("creator_monthly_revenue")
+          .select("*")
+          .eq("creator_id", dutchies.id);
+        manual?.forEach((r: any) => {
+          if (period === "month" && r.month !== CURRENT_MONTH) return;
+          const rooms = (Number(r.rooms_revenue) || 0) * 0.1;
+          const tours = (Number(r.tours_revenue) || 0) * 0.1;
+          const events = (Number(r.events_revenue) || 0) * 0.1;
+          map["DUTCHIES10"].roomsCommission += rooms;
+          map["DUTCHIES10"].toursCommission += tours;
+          map["DUTCHIES10"].total += rooms + tours + events;
+        });
+      }
 
       const sorted = Object.values(map)
         .filter(c => c.total > 0)

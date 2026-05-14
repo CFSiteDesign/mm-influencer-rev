@@ -67,7 +67,7 @@ const Leaderboard = () => {
         if (!map[key]) return;
         if (period === "month" && r.month !== CURRENT_MONTH) return;
         const rooms = (Number(r.rd_room_revenue) || 0) * 0.1;
-        const tours = (Number(r.hgl_revenue) || 0) * 0.1;
+        const tours = ((Number(r.hgl_revenue) || 0) + (Number(r.events_revenue) || 0)) * 0.1;
         map[key].roomsCommission += rooms;
         map[key].toursCommission += tours;
         map[key].total += rooms + tours;

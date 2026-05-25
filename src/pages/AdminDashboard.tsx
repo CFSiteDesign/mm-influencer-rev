@@ -299,13 +299,14 @@ const AdminDashboard = () => {
                   <img src={heartBadge} alt="" className="w-6 h-6" /> Rooms & Dorms
                 </h3>
                 <div className="rounded-2xl border border-border overflow-x-auto">
-                  <table className="w-full min-w-[480px]">
+                  <table className="w-full min-w-[560px]">
                     <thead>
                       <tr className="bg-muted">
                         <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Month</th>
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground"># Bookings</th>
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">GNA</th>
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">Room Revenue ($)</th>
+                        <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">10% ($)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -319,8 +320,9 @@ const AdminDashboard = () => {
                             <input type="number" value={r.rooms_gna || ""} onChange={e => updateRevenue(r.month, "rooms_gna", e.target.value)} className="w-20 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
                           </td>
                           <td className="px-4 py-2 text-right">
-                            <input type="number" step="0.01" value={r.rooms_revenue || ""} onChange={e => updateRevenue(r.month, "rooms_revenue", e.target.value)} className="w-28 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+                            <input type="number" step="0.01" value={r.rooms_revenue ? Number(r.rooms_revenue).toFixed(2) : ""} onChange={e => updateRevenue(r.month, "rooms_revenue", e.target.value)} className="w-28 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
                           </td>
+                          <td className="px-4 py-2 text-right text-sm font-display font-medium text-secondary">${(Number(r.rooms_revenue) * 0.1).toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -334,12 +336,13 @@ const AdminDashboard = () => {
                   <img src={lightningBadge} alt="" className="w-6 h-6" /> Travel & Tours (HGL)
                 </h3>
                 <div className="rounded-2xl border border-border overflow-x-auto">
-                  <table className="w-full min-w-[420px]">
+                  <table className="w-full min-w-[500px]">
                     <thead>
                       <tr className="bg-muted">
                         <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Month</th>
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground"># Bookings</th>
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">HGL Revenue ($)</th>
+                        <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">10% ($)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -350,8 +353,9 @@ const AdminDashboard = () => {
                             <input type="number" value={r.tours_bookings || ""} onChange={e => updateRevenue(r.month, "tours_bookings", e.target.value)} className="w-20 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
                           </td>
                           <td className="px-4 py-2 text-right">
-                            <input type="number" step="0.01" value={r.tours_revenue || ""} onChange={e => updateRevenue(r.month, "tours_revenue", e.target.value)} className="w-28 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+                            <input type="number" step="0.01" value={r.tours_revenue ? Number(r.tours_revenue).toFixed(2) : ""} onChange={e => updateRevenue(r.month, "tours_revenue", e.target.value)} className="w-28 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
                           </td>
+                          <td className="px-4 py-2 text-right text-sm font-display font-medium text-accent">${(Number(r.tours_revenue) * 0.1).toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -366,11 +370,12 @@ const AdminDashboard = () => {
                     <img src={lightningBadge} alt="" className="w-6 h-6" /> Events
                   </h3>
                   <div className="rounded-2xl border border-border overflow-x-auto">
-                    <table className="w-full min-w-[360px]">
+                    <table className="w-full min-w-[440px]">
                       <thead>
                         <tr className="bg-muted">
                           <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Month</th>
                           <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">Events Revenue ($)</th>
+                          <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">10% ($)</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -378,8 +383,9 @@ const AdminDashboard = () => {
                           <tr key={r.month} className="border-t border-border">
                             <td className="px-4 py-2 text-foreground text-sm">{r.month}</td>
                             <td className="px-4 py-2 text-right">
-                              <input type="number" step="0.01" value={r.events_revenue || ""} onChange={e => updateRevenue(r.month, "events_revenue", e.target.value)} className="w-28 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+                              <input type="number" step="0.01" value={r.events_revenue ? Number(r.events_revenue).toFixed(2) : ""} onChange={e => updateRevenue(r.month, "events_revenue", e.target.value)} className="w-28 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
                             </td>
+                            <td className="px-4 py-2 text-right text-sm font-display font-medium text-primary">${(Number(r.events_revenue) * 0.1).toFixed(2)}</td>
                           </tr>
                         ))}
                       </tbody>

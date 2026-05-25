@@ -358,6 +358,35 @@ const AdminDashboard = () => {
                   </table>
                 </div>
               </div>
+
+              {/* Events — Dutchies only */}
+              {selectedCreator.code.toUpperCase() === "DUTCHIES10" && (
+                <div className="mt-8">
+                  <h3 className="text-lg font-bold font-display text-primary mb-3 flex items-center gap-2">
+                    <img src={lightningBadge} alt="" className="w-6 h-6" /> Events
+                  </h3>
+                  <div className="rounded-2xl border border-border overflow-x-auto">
+                    <table className="w-full min-w-[360px]">
+                      <thead>
+                        <tr className="bg-muted">
+                          <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Month</th>
+                          <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">Events Revenue ($)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {revenue.map(r => (
+                          <tr key={r.month} className="border-t border-border">
+                            <td className="px-4 py-2 text-foreground text-sm">{r.month}</td>
+                            <td className="px-4 py-2 text-right">
+                              <input type="number" step="0.01" value={r.events_revenue || ""} onChange={e => updateRevenue(r.month, "events_revenue", e.target.value)} className="w-28 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

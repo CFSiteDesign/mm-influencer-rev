@@ -54,12 +54,20 @@ const AdminDashboard = () => {
     const { data } = await supabase.from("creators").select("*").order("code");
     if (data) setCreators(data);
 
-    // Load all revenue to compute totals per creator
-    const { data: allRevenue } = await supabase.from("creator_monthly_revenue").select("creator_id, rooms_revenue, tours_revenue");
+    // Load all revenue from the synced source-of-truth table to compute totals per creator
+    const { data: allRevenue } = await supabase
+      .from("creator_revenue")
+      .select("creator_code, rd_room_revenue, hgl_revenue, events_revenue");
     const totals: Record<string, number> = {};
+    const codeToId: Record<string, string> = {};
+    (data || []).forEach((c: any) => { codeToId[c.code.toUpperCase()] = c.id; });
     allRevenue?.forEach((r: any) => {
-      const cid = r.creator_id;
-      totals[cid] = (totals[cid] || 0) + Number(r.rooms_revenue) * 0.1 + Number(r.tours_revenue) * 0.1 + Number(r.events_revenue || 0) * 0.1;
+      const cid = codeToId[(r.creator_code || "").toUpperCase()];
+      if (!cid) return;
+      totals[cid] = (totals[cid] || 0)
+        + Number(r.rd_room_revenue || 0) * 0.1
+        + Number(r.hgl_revenue || 0) * 0.1
+        + Number(r.events_revenue || 0) * 0.1;
     });
     setCreatorTotals(totals);
   };
@@ -68,9 +76,9 @@ const AdminDashboard = () => {
     setSelectedCreator(creator);
     setExpandedCreator(creator.id);
     const { data } = await supabase
-      .from("creator_monthly_revenue")
+      .from("creator_revenue")
       .select("*")
-      .eq("creator_id", creator.id);
+      .ilike("creator_code", creator.code);
 
     const monthMap: Record<string, RevenueEntry> = {};
     MONTHS.forEach(m => {
@@ -80,11 +88,11 @@ const AdminDashboard = () => {
       if (monthMap[r.month]) {
         monthMap[r.month] = {
           month: r.month,
-          rooms_bookings: r.rooms_bookings,
-          rooms_gna: r.rooms_gna,
-          rooms_revenue: Number(r.rooms_revenue),
-          tours_bookings: r.tours_bookings,
-          tours_revenue: Number(r.tours_revenue),
+          rooms_bookings: r.rd_bookings ?? 0,
+          rooms_gna: r.rd_gna ?? 0,
+          rooms_revenue: Number(r.rd_room_revenue) || 0,
+          tours_bookings: r.hgl_bookings ?? 0,
+          tours_revenue: Number(r.hgl_revenue) || 0,
           events_revenue: Number(r.events_revenue) || 0,
         };
       }
@@ -102,34 +110,36 @@ const AdminDashboard = () => {
     if (!selectedCreator) return;
     setSaving(true);
 
+    const code = selectedCreator.code.toUpperCase();
     for (const r of revenue) {
       const { data: existing } = await supabase
-        .from("creator_monthly_revenue")
+        .from("creator_revenue")
         .select("id")
-        .eq("creator_id", selectedCreator.id)
+        .ilike("creator_code", code)
         .eq("month", r.month)
         .maybeSingle();
 
       if (existing) {
-        await supabase.from("creator_monthly_revenue").update({
-          rooms_bookings: r.rooms_bookings,
-          rooms_gna: r.rooms_gna,
-          rooms_revenue: r.rooms_revenue,
-          tours_bookings: r.tours_bookings,
-          tours_revenue: r.tours_revenue,
+        await supabase.from("creator_revenue").update({
+          rd_bookings: r.rooms_bookings,
+          rd_gna: r.rooms_gna,
+          rd_room_revenue: r.rooms_revenue,
+          hgl_bookings: r.tours_bookings,
+          hgl_revenue: r.tours_revenue,
           events_revenue: r.events_revenue,
+          synced_at: new Date().toISOString(),
         }).eq("id", existing.id);
       } else {
         const hasData = r.rooms_bookings || r.rooms_revenue || r.tours_bookings || r.tours_revenue || r.events_revenue;
         if (hasData) {
-          await supabase.from("creator_monthly_revenue").insert({
-            creator_id: selectedCreator.id,
+          await supabase.from("creator_revenue").insert({
+            creator_code: code,
             month: r.month,
-            rooms_bookings: r.rooms_bookings,
-            rooms_gna: r.rooms_gna,
-            rooms_revenue: r.rooms_revenue,
-            tours_bookings: r.tours_bookings,
-            tours_revenue: r.tours_revenue,
+            rd_bookings: r.rooms_bookings,
+            rd_gna: r.rooms_gna,
+            rd_room_revenue: r.rooms_revenue,
+            hgl_bookings: r.tours_bookings,
+            hgl_revenue: r.tours_revenue,
             events_revenue: r.events_revenue,
           });
         }
@@ -149,7 +159,7 @@ const AdminDashboard = () => {
   const handleDeleteCreator = async (creator: Creator) => {
     if (!window.confirm(`Delete "${creator.code}"? This will also remove all their revenue data.`)) return;
 
-    await supabase.from("creator_monthly_revenue").delete().eq("creator_id", creator.id);
+    await supabase.from("creator_revenue").delete().ilike("creator_code", creator.code);
     const { error } = await supabase.from("creators").delete().eq("id", creator.id);
 
     if (error) {

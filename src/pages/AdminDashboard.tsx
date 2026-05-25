@@ -193,26 +193,27 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-border px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="border-b border-border px-4 md:px-6 py-3 md:py-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           <img src={madMonkeyLogo} alt="Mad Monkey" className="h-8" />
           <span className="text-muted-foreground text-sm font-display">|</span>
-          <h1 className="text-xl font-bold font-display text-foreground">Admin</h1>
+          <h1 className="text-lg md:text-xl font-bold font-display text-foreground">Admin</h1>
         </div>
-        <div className="flex items-center gap-4">
-          <Link to="/" className="text-muted-foreground text-sm hover:text-primary transition-colors">
-            View Public Page
+        <div className="flex items-center gap-3 md:gap-4 text-sm">
+          <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
+            <span className="hidden sm:inline">View Public Page</span>
+            <span className="sm:hidden">Public</span>
           </Link>
-          <button onClick={handleLogout} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+          <button onClick={handleLogout} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors">
             <LogOut className="w-4 h-4" /> Logout
           </button>
-          <PoweredByTheoroX />
+          <div className="hidden md:block"><PoweredByTheoroX /></div>
         </div>
       </div>
 
-      <div className="flex h-[calc(100vh-65px)]">
+      <div className="flex flex-col md:flex-row md:h-[calc(100vh-65px)]">
         {/* Sidebar - Creator List */}
-        <div className="w-72 border-r border-border overflow-y-auto p-4">
+        <div className="w-full md:w-72 border-b md:border-b-0 md:border-r border-border overflow-y-auto p-4 max-h-[40vh] md:max-h-none">
           <input
             value={searchFilter}
             onChange={e => setSearchFilter(e.target.value)}
@@ -262,29 +263,29 @@ const AdminDashboard = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {!selectedCreator ? (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
               <img src={heartBadge} alt="" className="w-16 h-16 mb-4 opacity-50" />
-              <p className="text-lg">Select a creator to edit their revenue data</p>
+              <p className="text-base md:text-lg text-center">Select a creator to edit their revenue data</p>
             </div>
           ) : (
             <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold font-display text-foreground">
-                  {selectedCreator.code} <span className="text-muted-foreground font-normal text-lg">({selectedCreator.name})</span> <span className="text-muted-foreground font-normal text-sm">{selectedCreator.creator_id}</span>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+                <h2 className="text-xl md:text-2xl font-bold font-display text-foreground break-words">
+                  {selectedCreator.code} <span className="text-muted-foreground font-normal text-base md:text-lg">({selectedCreator.name})</span> <span className="text-muted-foreground font-normal text-xs md:text-sm">{selectedCreator.creator_id}</span>
                 </h2>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleDeleteCreator(selectedCreator)}
-                    className="flex items-center gap-1.5 rounded-xl border border-destructive/30 text-destructive px-4 py-2.5 text-sm font-display font-medium hover:bg-destructive/10 transition-colors"
+                    className="flex items-center gap-1.5 rounded-xl border border-destructive/30 text-destructive px-3 md:px-4 py-2 md:py-2.5 text-sm font-display font-medium hover:bg-destructive/10 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" /> Delete
                   </button>
                   <button
                     onClick={saveRevenue}
                     disabled={saving}
-                    className="flex items-center gap-2 rounded-xl bg-primary text-primary-foreground px-5 py-2.5 font-display font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+                    className="flex items-center gap-2 rounded-xl bg-primary text-primary-foreground px-4 md:px-5 py-2 md:py-2.5 font-display font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
                     {saving ? "Saving..." : "Save All"}
@@ -297,8 +298,8 @@ const AdminDashboard = () => {
                 <h3 className="text-lg font-bold font-display text-secondary mb-3 flex items-center gap-2">
                   <img src={heartBadge} alt="" className="w-6 h-6" /> Rooms & Dorms
                 </h3>
-                <div className="rounded-2xl border border-border overflow-hidden">
-                  <table className="w-full">
+                <div className="rounded-2xl border border-border overflow-x-auto">
+                  <table className="w-full min-w-[480px]">
                     <thead>
                       <tr className="bg-muted">
                         <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Month</th>
@@ -332,8 +333,8 @@ const AdminDashboard = () => {
                 <h3 className="text-lg font-bold font-display text-accent mb-3 flex items-center gap-2">
                   <img src={lightningBadge} alt="" className="w-6 h-6" /> Travel & Tours (HGL)
                 </h3>
-                <div className="rounded-2xl border border-border overflow-hidden">
-                  <table className="w-full">
+                <div className="rounded-2xl border border-border overflow-x-auto">
+                  <table className="w-full min-w-[420px]">
                     <thead>
                       <tr className="bg-muted">
                         <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Month</th>

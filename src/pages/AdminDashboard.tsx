@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
-import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown, Trash2 } from "lucide-react";
+import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown, Trash2, TrendingUp, TrendingDown } from "lucide-react";
 import lightningBadge from "@/assets/lightning-badge.png";
 import heartBadge from "@/assets/heart-badge.png";
 import { toast } from "sonner";
@@ -38,6 +38,9 @@ const AdminDashboard = () => {
   const [expandedCreator, setExpandedCreator] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<"alpha" | "highest" | "lowest">("alpha");
   const [creatorTotals, setCreatorTotals] = useState<Record<string, number>>({});
+  const [allRevenueRows, setAllRevenueRows] = useState<any[]>([]);
+  const [compareFrom, setCompareFrom] = useState<string>("April");
+  const [compareTo, setCompareTo] = useState<string>("May");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -57,7 +60,8 @@ const AdminDashboard = () => {
     // Load all revenue from the synced source-of-truth table to compute totals per creator
     const { data: allRevenue } = await supabase
       .from("creator_revenue")
-      .select("creator_code, rd_room_revenue, hgl_revenue, events_revenue");
+      .select("creator_code, month, rd_room_revenue, hgl_revenue, events_revenue");
+    setAllRevenueRows(allRevenue || []);
     const totals: Record<string, number> = {};
     const codeToId: Record<string, string> = {};
     (data || []).forEach((c: any) => { codeToId[c.code.toUpperCase()] = c.id; });

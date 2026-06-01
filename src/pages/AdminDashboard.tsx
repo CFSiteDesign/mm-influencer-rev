@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
-import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown, Trash2, TrendingUp, TrendingDown } from "lucide-react";
+import { LogOut, Save, ChevronDown, ChevronUp, ArrowUpDown, Trash2, TrendingUp, TrendingDown, BarChart3 } from "lucide-react";
 import lightningBadge from "@/assets/lightning-badge.png";
 import heartBadge from "@/assets/heart-badge.png";
 import { toast } from "sonner";
@@ -355,6 +355,14 @@ const AdminDashboard = () => {
           <h1 className="text-lg md:text-xl font-bold font-display text-foreground">Admin</h1>
         </div>
         <div className="flex items-center gap-3 md:gap-4 text-sm">
+          <button
+            onClick={() => setSelectedCreator(null)}
+            className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors"
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span className="hidden sm:inline">Month Comparison</span>
+            <span className="sm:hidden">Compare</span>
+          </button>
           <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
             <span className="hidden sm:inline">View Public Page</span>
             <span className="sm:hidden">Public</span>

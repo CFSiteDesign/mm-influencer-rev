@@ -10,6 +10,157 @@ import PoweredByTheoroX from "@/components/PoweredByTheoroX";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
+function MonthComparison({
+  rows,
+  creators,
+  compareFrom,
+  compareTo,
+  setCompareFrom,
+  setCompareTo,
+}: {
+  rows: any[];
+  creators: { id: string; code: string; name: string | null }[];
+  compareFrom: string;
+  compareTo: string;
+  setCompareFrom: (v: string) => void;
+  setCompareTo: (v: string) => void;
+}) {
+  const totalsByCodeMonth: Record<string, Record<string, number>> = {};
+  rows.forEach((r) => {
+    const code = (r.creator_code || "").toUpperCase();
+    const total =
+      Number(r.rd_room_revenue || 0) +
+      Number(r.hgl_revenue || 0) +
+      Number(r.events_revenue || 0);
+    if (!totalsByCodeMonth[code]) totalsByCodeMonth[code] = {};
+    totalsByCodeMonth[code][r.month] =
+      (totalsByCodeMonth[code][r.month] || 0) + total;
+  });
+
+  const knownCodes = new Set(creators.map((c) => c.code.toUpperCase()));
+  const nameByCode: Record<string, string | null> = {};
+  creators.forEach((c) => (nameByCode[c.code.toUpperCase()] = c.name));
+
+  const allCodes = Array.from(
+    new Set([...Object.keys(totalsByCodeMonth), ...knownCodes])
+  );
+
+  const items = allCodes
+    .map((code) => {
+      const from = totalsByCodeMonth[code]?.[compareFrom] || 0;
+      const to = totalsByCodeMonth[code]?.[compareTo] || 0;
+      return {
+        code,
+        name: nameByCode[code] || null,
+        from,
+        to,
+        delta: to - from,
+        pct: from > 0 ? ((to - from) / from) * 100 : null,
+      };
+    })
+    .filter((i) => i.from > 0 || i.to > 0)
+    .sort((a, b) => b.delta - a.delta);
+
+  const fromTotal = items.reduce((s, i) => s + i.from, 0);
+  const toTotal = items.reduce((s, i) => s + i.to, 0);
+  const gainers = items.filter((i) => i.delta > 0).length;
+  const decliners = items.filter((i) => i.delta < 0).length;
+
+  return (
+    <div>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
+        <div>
+          <h2 className="text-xl md:text-2xl font-bold font-display text-foreground">
+            Month-over-Month Comparison
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Gross revenue (Rooms + Tours + Events) per creator
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <select
+            value={compareFrom}
+            onChange={(e) => setCompareFrom(e.target.value)}
+            className="rounded-lg bg-card border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            {MONTHS.map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+          <span className="text-muted-foreground text-sm">vs</span>
+          <select
+            value={compareTo}
+            onChange={(e) => setCompareTo(e.target.value)}
+            className="rounded-lg bg-card border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            {MONTHS.map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div className="rounded-xl border border-border bg-card p-3">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-display">{compareFrom} total</div>
+          <div className="text-lg font-bold font-display text-foreground">${fromTotal.toLocaleString(undefined,{maximumFractionDigits:2})}</div>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-3">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-display">{compareTo} total</div>
+          <div className="text-lg font-bold font-display text-foreground">${toTotal.toLocaleString(undefined,{maximumFractionDigits:2})}</div>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-3">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-display">Gainers</div>
+          <div className="text-lg font-bold font-display text-secondary flex items-center gap-1"><TrendingUp className="w-4 h-4" />{gainers}</div>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-3">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-display">Decliners</div>
+          <div className="text-lg font-bold font-display text-destructive flex items-center gap-1"><TrendingDown className="w-4 h-4" />{decliners}</div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border overflow-x-auto">
+        <table className="w-full min-w-[640px]">
+          <thead>
+            <tr className="bg-muted">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Creator</th>
+              <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">{compareFrom}</th>
+              <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">{compareTo}</th>
+              <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Δ $</th>
+              <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Δ %</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.length === 0 && (
+              <tr><td colSpan={5} className="px-4 py-6 text-center text-sm text-muted-foreground">No revenue in either month</td></tr>
+            )}
+            {items.map((i) => {
+              const positive = i.delta > 0;
+              const negative = i.delta < 0;
+              return (
+                <tr key={i.code} className="border-t border-border">
+                  <td className="px-4 py-2 text-sm font-display text-foreground">
+                    <span className="font-medium">{i.code}</span>
+                    {i.name && <span className="text-xs ml-2 text-muted-foreground">{i.name}</span>}
+                  </td>
+                  <td className="px-4 py-2 text-right text-sm text-foreground tabular-nums">${i.from.toFixed(2)}</td>
+                  <td className="px-4 py-2 text-right text-sm text-foreground tabular-nums">${i.to.toFixed(2)}</td>
+                  <td className={`px-4 py-2 text-right text-sm font-display font-bold tabular-nums ${positive ? "text-secondary" : negative ? "text-destructive" : "text-muted-foreground"}`}>
+                    {positive ? "+" : ""}${i.delta.toFixed(2)}
+                  </td>
+                  <td className={`px-4 py-2 text-right text-sm font-display tabular-nums ${positive ? "text-secondary" : negative ? "text-destructive" : "text-muted-foreground"}`}>
+                    {i.pct === null ? "NEW" : `${i.pct >= 0 ? "+" : ""}${i.pct.toFixed(0)}%`}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 interface Creator {
   id: string;
   code: string;

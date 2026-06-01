@@ -269,10 +269,14 @@ const AdminDashboard = () => {
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {!selectedCreator ? (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-              <img src={heartBadge} alt="" className="w-16 h-16 mb-4 opacity-50" />
-              <p className="text-base md:text-lg text-center">Select a creator to edit their revenue data</p>
-            </div>
+            <MonthComparison
+              rows={allRevenueRows}
+              creators={creators}
+              compareFrom={compareFrom}
+              compareTo={compareTo}
+              setCompareFrom={setCompareFrom}
+              setCompareTo={setCompareTo}
+            />
           ) : (
             <div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">

@@ -25,6 +25,10 @@ function MonthComparison({
   setCompareFrom: (v: string) => void;
   setCompareTo: (v: string) => void;
 }) {
+  const [sortBy, setSortBy] = useState<
+    "deltaDesc" | "pctDesc" | "toDesc" | "fromDesc" | "alpha" | "alphaDesc"
+  >("deltaDesc");
+
   const totalsByCodeMonth: Record<string, Record<string, number>> = {};
   rows.forEach((r) => {
     const code = (r.creator_code || "").toUpperCase();
@@ -45,6 +49,15 @@ function MonthComparison({
     new Set([...Object.keys(totalsByCodeMonth), ...knownCodes])
   );
 
+  const sortOptions: { value: typeof sortBy; label: string }[] = [
+    { value: "deltaDesc", label: "Biggest Δ $" },
+    { value: "pctDesc", label: "Biggest Δ %" },
+    { value: "toDesc", label: `Highest ${compareTo}` },
+    { value: "fromDesc", label: `Highest ${compareFrom}` },
+    { value: "alpha", label: "A – Z" },
+    { value: "alphaDesc", label: "Z – A" },
+  ];
+
   const items = allCodes
     .map((code) => {
       const from = totalsByCodeMonth[code]?.[compareFrom] || 0;
@@ -59,7 +72,24 @@ function MonthComparison({
       };
     })
     .filter((i) => i.from > 0 || i.to > 0)
-    .sort((a, b) => b.delta - a.delta);
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "deltaDesc":
+          return b.delta - a.delta;
+        case "pctDesc":
+          return (b.pct ?? -Infinity) - (a.pct ?? -Infinity);
+        case "toDesc":
+          return b.to - a.to;
+        case "fromDesc":
+          return b.from - a.from;
+        case "alpha":
+          return a.code.localeCompare(b.code);
+        case "alphaDesc":
+          return b.code.localeCompare(a.code);
+        default:
+          return 0;
+      }
+    });
 
   const fromTotal = items.reduce((s, i) => s + i.from, 0);
   const toTotal = items.reduce((s, i) => s + i.to, 0);
@@ -77,7 +107,16 @@ function MonthComparison({
             Gross revenue (Rooms + Tours + Events) per creator
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+            className="rounded-lg bg-card border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            {sortOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
           <select
             value={compareFrom}
             onChange={(e) => setCompareFrom(e.target.value)}

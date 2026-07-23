@@ -63,11 +63,7 @@ Deno.serve(async (req) => {
       const hgl_revenue = Number(m.hgl_revenue) || 0;
       const events_revenue = Number(m.events_revenue) || 0;
 
-      // Skip if all values are zero
-      if (rd_bookings === 0 && rd_gna === 0 && rd_room_revenue === 0 && hgl_bookings === 0 && hgl_revenue === 0 && events_revenue === 0) {
-        continue;
-      }
-
+      // Always sync — zero rows overwrite stale data so dashboard matches the sheet.
       rows.push({
         creator_code: normalizedCode,
         month: m.month,

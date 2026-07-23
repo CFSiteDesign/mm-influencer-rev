@@ -1,0 +1,1 @@
+DELETE FROM public.creator_revenue WHERE creator_code = 'RISKY10' AND month = 'May';

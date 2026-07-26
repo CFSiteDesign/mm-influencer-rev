@@ -12,6 +12,7 @@ interface CreatorScore {
   name: string | null;
   roomsCommission: number;
   toursCommission: number;
+  allinCommission: number;
   total: number;
 }
 
@@ -59,7 +60,7 @@ const Leaderboard = () => {
 
       const map: Record<string, CreatorScore> = {};
       creators.forEach(c => {
-        map[c.code.toUpperCase()] = { code: c.code, name: c.name, roomsCommission: 0, toursCommission: 0, total: 0 };
+        map[c.code.toUpperCase()] = { code: c.code, name: c.name, roomsCommission: 0, toursCommission: 0, allinCommission: 0, total: 0 };
       });
 
       revenue?.forEach((r: any) => {
@@ -68,9 +69,11 @@ const Leaderboard = () => {
         if (period === "month" && r.month !== CURRENT_MONTH) return;
         const rooms = (Number(r.rd_room_revenue) || 0) * 0.1;
         const tours = ((Number(r.hgl_revenue) || 0) + (Number(r.events_revenue) || 0)) * 0.1;
+        const allin = Number(r.allin_commission) || 0;
         map[key].roomsCommission += rooms;
         map[key].toursCommission += tours;
-        map[key].total += rooms + tours;
+        map[key].allinCommission += allin;
+        map[key].total += rooms + tours + allin;
       });
 
       const sorted = Object.values(map)

@@ -17,6 +17,9 @@ interface RevenueRow {
   tours_bookings: number;
   tours_revenue: number;
   events_revenue: number;
+  allin_bookings: number;
+  allin_commission: number;
+  allin_pending: number;
 }
 
 // Map creator_revenue columns to our internal format
@@ -29,10 +32,23 @@ function mapRevenueRow(r: any): RevenueRow {
     tours_bookings: r.hgl_bookings ?? 0,
     tours_revenue: Number(r.hgl_revenue) || 0,
     events_revenue: Number(r.events_revenue) || 0,
+    allin_bookings: r.allin_bookings ?? 0,
+    allin_commission: Number(r.allin_commission) || 0,
+    allin_pending: Number(r.allin_pending) || 0,
   };
 }
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+const emptyRow = (m: string): RevenueRow => ({
+  month: m,
+  rooms_bookings: 0, rooms_gna: 0, rooms_revenue: 0,
+  tours_bookings: 0, tours_revenue: 0, events_revenue: 0,
+  allin_bookings: 0, allin_commission: 0, allin_pending: 0,
+});
+
+const commissionForRow = (r: RevenueRow) =>
+  (r.rooms_revenue + r.tours_revenue + r.events_revenue) * 0.1 + r.allin_commission;
 
 const Index = () => {
   const [code, setCode] = useState("");
@@ -80,7 +96,7 @@ const Index = () => {
     setLastSyncedAt(latestSync);
 
     const monthMap: Record<string, RevenueRow> = {};
-    MONTHS.forEach(m => { monthMap[m] = { month: m, rooms_bookings: 0, rooms_gna: 0, rooms_revenue: 0, tours_bookings: 0, tours_revenue: 0, events_revenue: 0 }; });
+    MONTHS.forEach(m => { monthMap[m] = emptyRow(m); });
     revenueData?.forEach((r: any) => {
       if (monthMap[r.month]) {
         monthMap[r.month] = mapRevenueRow(r);
@@ -92,8 +108,8 @@ const Index = () => {
     setLoading(false);
   };
 
-  const isDutchies = code.trim().toUpperCase() === "DUTCHIES10";
-  const totalCommission = revenue.reduce((s, r) => s + (r.rooms_revenue + r.tours_revenue + (isDutchies ? r.events_revenue : 0)) * 0.1, 0);
+  const totalCommission = revenue.reduce((s, r) => s + commissionForRow(r), 0);
+  const totalPending = revenue.reduce((s, r) => s + r.allin_pending, 0);
 
   // Compute current and previous month names using Australia/Brisbane timezone
   const brisbaneNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Australia/Brisbane" }));
@@ -103,10 +119,16 @@ const Index = () => {
   const commissionFor = (monthName: string) => {
     const r = revenue.find(x => x.month === monthName);
     if (!r) return 0;
-    return (r.rooms_revenue + r.tours_revenue + (isDutchies ? r.events_revenue : 0)) * 0.1;
+    return commissionForRow(r);
+  };
+  const pendingFor = (monthName: string) => {
+    const r = revenue.find(x => x.month === monthName);
+    return r ? r.allin_pending : 0;
   };
   const currentMonthCommission = commissionFor(currentMonthName);
   const lastMonthCommission = commissionFor(lastMonthName);
+  const currentMonthPending = pendingFor(currentMonthName);
+  const lastMonthPending = pendingFor(lastMonthName);
   const lastSyncedLabel = lastSyncedAt
     ? new Intl.DateTimeFormat("en-AU", {
         timeZone: "Australia/Brisbane",
@@ -260,11 +282,19 @@ const Index = () => {
             >
               <div className="absolute inset-0 bg-primary/25 backdrop-blur-sm" />
               <div className="relative z-10 text-center">
-                <p className="text-xs font-medium mb-0.5 text-primary-foreground/80">Total Commission (10%)</p>
+                <p className="text-xs font-medium mb-0.5 text-primary-foreground/80">Total Commission</p>
                 <p className="text-[11px] font-medium tracking-wider text-primary-foreground mb-1">(ALL TIME)</p>
                 <p className="text-3xl font-bold font-display text-primary-foreground">${totalCommission.toFixed(2)}</p>
+                {totalPending > 0 && (
+                  <p className="text-[10px] mt-1 text-primary-foreground/75">
+                    + ${totalPending.toFixed(2)} pending until final trip payment
+                  </p>
+                )}
               </div>
             </div>
+            <p className="mt-2 text-[10px] text-muted-foreground text-center px-2">
+              Beds, Travel + Tours and Events pay 10% of revenue. ALL IN pays a flat fee per trip booking.
+            </p>
           </div>
 
           {/* Current vs Last month commission boxes */}
@@ -273,15 +303,21 @@ const Index = () => {
               <p className="text-[11px] font-bold uppercase tracking-wider text-white">
                 Current Month: {currentMonthName}
               </p>
-              <p className="text-[11px] font-normal text-white/90 mt-0.5">Total Commission (10%)</p>
+              <p className="text-[11px] font-normal text-white/90 mt-0.5">Total Commission</p>
               <p className="text-2xl md:text-3xl font-bold font-display text-white mt-1">${currentMonthCommission.toFixed(2)}</p>
+              {currentMonthPending > 0 && (
+                <p className="text-[10px] text-white/75 mt-1">+ ${currentMonthPending.toFixed(2)} pending until final trip payment</p>
+              )}
             </div>
             <div className="rounded-xl p-4 bg-accent text-accent-foreground">
               <p className="text-[11px] font-bold uppercase tracking-wider text-white">
                 Last Month: {lastMonthName}
               </p>
-              <p className="text-[11px] font-normal text-white/90 mt-0.5">Total Commission (10%)</p>
+              <p className="text-[11px] font-normal text-white/90 mt-0.5">Total Commission</p>
               <p className="text-2xl md:text-3xl font-bold font-display text-white mt-1">${lastMonthCommission.toFixed(2)}</p>
+              {lastMonthPending > 0 && (
+                <p className="text-[10px] text-white/75 mt-1">+ ${lastMonthPending.toFixed(2)} pending until final trip payment</p>
+              )}
               {lastSyncedLabel && (
                 <p className="text-[10px] text-white/75 mt-1">Updated: {lastSyncedLabel}</p>
               )}
@@ -296,24 +332,27 @@ const Index = () => {
                   <th className="text-left px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Month</th>
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground whitespace-nowrap">Book.</th>
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Beds</th>
-                  {isDutchies && <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Events</th>}
+                  <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Events</th>
                   <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Tours</th>
-                  <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">10%</th>
+                  <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground whitespace-nowrap">ALL IN</th>
+                  <th className="text-right px-2 md:px-4 py-3 text-xs font-medium text-muted-foreground">Commission</th>
                 </tr>
               </thead>
               <tbody>
                 {revenue.map(row => {
-                  const commission = (row.rooms_revenue + row.tours_revenue + (isDutchies ? row.events_revenue : 0)) * 0.1;
+                  const commission = commissionForRow(row);
+                  const totalBookings = row.rooms_bookings + row.tours_bookings + row.allin_bookings;
                   return (
                     <tr key={row.month} className="border-t border-border/50 hover:bg-muted/50 transition-colors">
                       <td className="px-2 md:px-4 py-2.5 text-foreground">
                         <span className="hidden md:inline">{row.month}</span>
                         <span className="md:hidden">{row.month.slice(0, 3)}</span>
                       </td>
-                      <td className="px-2 md:px-4 py-2.5 text-right text-muted-foreground">{(row.rooms_bookings + row.tours_bookings) || "-"}</td>
+                      <td className="px-2 md:px-4 py-2.5 text-right text-muted-foreground">{totalBookings || "-"}</td>
                       <td className="px-2 md:px-4 py-2.5 text-right text-secondary font-medium">{row.rooms_revenue > 0 ? `$${row.rooms_revenue.toFixed(0)}` : "-"}</td>
-                      {isDutchies && <td className="px-2 md:px-4 py-2.5 text-right text-secondary font-medium">{row.events_revenue > 0 ? `$${row.events_revenue.toFixed(0)}` : "-"}</td>}
+                      <td className="px-2 md:px-4 py-2.5 text-right text-secondary font-medium">{row.events_revenue > 0 ? `$${row.events_revenue.toFixed(0)}` : "-"}</td>
                       <td className="px-2 md:px-4 py-2.5 text-right text-accent font-medium">{row.tours_revenue > 0 ? `$${row.tours_revenue.toFixed(0)}` : "-"}</td>
+                      <td className="px-2 md:px-4 py-2.5 text-right text-primary font-medium">{row.allin_commission > 0 ? `$${row.allin_commission.toFixed(2)}` : "-"}</td>
                       <td className="px-2 md:px-4 py-2.5 text-right font-bold text-black">{commission > 0 ? `$${commission.toFixed(2)}` : "-"}</td>
                     </tr>
                   );

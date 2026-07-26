@@ -69,6 +69,10 @@ export type Database = {
       }
       creator_revenue: {
         Row: {
+          allin_bookings: number
+          allin_commission: number
+          allin_pending: number
+          allin_synced_at: string | null
           creator_code: string
           events_revenue: number | null
           hgl_bookings: number | null
@@ -81,6 +85,10 @@ export type Database = {
           synced_at: string | null
         }
         Insert: {
+          allin_bookings?: number
+          allin_commission?: number
+          allin_pending?: number
+          allin_synced_at?: string | null
           creator_code: string
           events_revenue?: number | null
           hgl_bookings?: number | null
@@ -93,6 +101,10 @@ export type Database = {
           synced_at?: string | null
         }
         Update: {
+          allin_bookings?: number
+          allin_commission?: number
+          allin_pending?: number
+          allin_synced_at?: string | null
           creator_code?: string
           events_revenue?: number | null
           hgl_bookings?: number | null

@@ -36,6 +36,8 @@ function MonthComparison({
       Number(r.rd_room_revenue || 0) +
       Number(r.hgl_revenue || 0) +
       Number(r.events_revenue || 0);
+    // Gross for the like-for-like comparison stays revenue only (ALL IN is a flat fee, not revenue).
+    // ALL IN commission is added separately below.
     if (!totalsByCodeMonth[code]) totalsByCodeMonth[code] = {};
     totalsByCodeMonth[code][r.month] =
       (totalsByCodeMonth[code][r.month] || 0) + total;
@@ -104,7 +106,7 @@ function MonthComparison({
             Month-over-Month Comparison
           </h2>
           <p className="text-sm text-muted-foreground">
-            Gross revenue (Rooms + Tours + Events) per creator
+            Gross revenue (Rooms + Tours + Events) per creator. ALL IN is a flat trip fee and is excluded here.
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">

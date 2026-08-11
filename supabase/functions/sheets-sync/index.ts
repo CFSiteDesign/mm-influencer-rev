@@ -82,12 +82,20 @@ Deno.serve(async (req) => {
     }
   }
 
-  if (rows.length === 0) {
+  // Deduplicate by creator_code + month — Postgres upsert cannot touch the same
+  // row twice in one statement. Later occurrences win.
+  const dedupedMap = new Map<string, any>();
+  for (const r of rows) {
+    dedupedMap.set(`${r.creator_code}__${r.month}`, r);
+  }
+  const dedupedRows = [...dedupedMap.values()];
+
+  if (dedupedRows.length === 0) {
     return jsonResponse({ success: true, synced: 0, creatorsAdded: 0, message: "No non-zero data to sync" });
   }
 
   // Auto-add new creator codes to the creators table
-  const uniqueCodes = [...new Set(rows.map((r) => r.creator_code))];
+  const uniqueCodes = [...new Set(dedupedRows.map((r) => r.creator_code))];
   const { data: existingCreators } = await supabase
     .from("creators")
     .select("code")
@@ -108,13 +116,21 @@ Deno.serve(async (req) => {
     }
   }
 
-  const { error } = await supabase
-    .from("creator_revenue")
-    .upsert(rows, { onConflict: "creator_code,month" });
-
-  if (error) {
-    return jsonResponse({ error: error.message }, 500);
+  // Upsert in chunks to stay well within statement limits
+  const CHUNK = 500;
+  for (let i = 0; i < dedupedRows.length; i += CHUNK) {
+    const { error } = await supabase
+      .from("creator_revenue")
+      .upsert(dedupedRows.slice(i, i + CHUNK), { onConflict: "creator_code,month" });
+    if (error) {
+      return jsonResponse({ error: error.message }, 500);
+    }
   }
 
-  return jsonResponse({ success: true, synced: rows.length, creatorsAdded });
+  return jsonResponse({
+    success: true,
+    synced: dedupedRows.length,
+    duplicatesMerged: rows.length - dedupedRows.length,
+    creatorsAdded,
+  });
 });

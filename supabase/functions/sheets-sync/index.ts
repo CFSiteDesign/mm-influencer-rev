@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, x-api-secret",
 };
 
 function jsonResponse(body: object, status = 200) {
@@ -22,10 +22,14 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
 
-  // Auth check
-  const authHeader = req.headers.get("Authorization");
+  // Auth check — accept either "Authorization: Bearer <secret>" or "x-api-secret: <secret>"
   const expected = Deno.env.get("SHEETS_WEBHOOK_SECRET");
-  if (!authHeader || authHeader !== `Bearer ${expected}`) {
+  const authHeader = req.headers.get("Authorization");
+  const apiSecret = req.headers.get("x-api-secret");
+  const authorized =
+    !!expected &&
+    ((!!authHeader && authHeader === `Bearer ${expected}`) || apiSecret === expected);
+  if (!authorized) {
     return jsonResponse({ error: "Unauthorized" }, 401);
   }
 

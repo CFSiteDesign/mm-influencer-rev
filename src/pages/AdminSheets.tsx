@@ -65,11 +65,7 @@ const AdminSheets = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data: rows } = await supabase
-        .from("creator_revenue")
-        .select("*")
-        .order("creator_code")
-        .order("month");
+      const rows = await fetchAllRevenue();
       setData(rows || []);
       setLoading(false);
     };

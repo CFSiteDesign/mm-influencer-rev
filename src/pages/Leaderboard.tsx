@@ -7,6 +7,30 @@ import lightningBadge from "@/assets/lightning-badge.png";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 import PoweredByTheoroX from "@/components/PoweredByTheoroX";
 
+/**
+ * Supabase/PostgREST caps a single response at 1000 rows. creator_revenue holds
+ * ~4,400 (370 creators x 12 months), so an unbounded select() silently returned
+ * only the first 1000 and every total was computed from a fraction of the data.
+ * Page through explicitly, with a stable order so pages can't overlap or skip.
+ */
+async function fetchAllRevenue(columns = "*") {
+  const PAGE = 1000;
+  const all: any[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from("creator_revenue")
+      .select(columns)
+      .order("creator_code", { ascending: true })
+      .order("month", { ascending: true })
+      .range(from, from + PAGE - 1);
+    if (error || !data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PAGE) break;
+  }
+  return all;
+}
+
+
 interface CreatorScore {
   code: string;
   name: string | null;

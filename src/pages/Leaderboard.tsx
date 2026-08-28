@@ -80,7 +80,7 @@ const Leaderboard = () => {
       const { data: creators } = await supabase.from("creators").select("id, code, name");
       if (!creators?.length) { setLoading(false); return; }
 
-      const { data: revenue } = await supabase.from("creator_revenue").select("*");
+      const revenue = await fetchAllRevenue();
 
       const map: Record<string, CreatorScore> = {};
       creators.forEach(c => {

@@ -278,9 +278,7 @@ const AdminDashboard = () => {
     if (data) setCreators(data);
 
     // Load all revenue from the synced source-of-truth table to compute totals per creator
-    const { data: allRevenue } = await supabase
-      .from("creator_revenue")
-      .select("creator_code, month, rd_room_revenue, hgl_revenue, events_revenue, allin_commission");
+    const allRevenue = await fetchAllRevenue("creator_code, month, rd_room_revenue, hgl_revenue, events_revenue, allin_commission");
     setAllRevenueRows(allRevenue || []);
     const totals: Record<string, number> = {};
     const codeToId: Record<string, string> = {};

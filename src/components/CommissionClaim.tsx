@@ -12,7 +12,7 @@ const COMMISSION_PDF_URL =
 const CommissionClaim = () => (
   <div className="flex flex-col items-center gap-4">
     <img
-      src={affiliateBreakdown.url}
+      src={affiliateBreakdown}
       alt="Affiliate breakdown: what each product pays creators"
       className="w-full max-w-md rounded-xl border border-border"
       loading="lazy"

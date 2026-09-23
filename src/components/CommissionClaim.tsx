@@ -1,5 +1,5 @@
 import { FileText } from "lucide-react";
-import affiliateBreakdown from "@/assets/affiliate-breakdown.png.asset.json";
+import affiliateBreakdown from "@/assets/affiliate-breakdown.png";
 
 const COMMISSION_PDF_URL =
   "https://madmonkey-wp.sgp1.cdn.digitaloceanspaces.com/creator-hub-commission-agreement.pdf";

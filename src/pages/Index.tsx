@@ -71,20 +71,34 @@ const Index = () => {
 
     const { data: creator } = await supabase
       .from("creators")
-      .select("id, name, code, creator_id")
+      .select("id, name, code, creator_id, email")
       .eq("code", code.trim().toUpperCase())
       .maybeSingle();
 
     if (!creator) { setNotFound(true); setLoading(false); return; }
-    if (!creator.creator_id || creator.creator_id.toUpperCase() !== creatorIdInput.trim().toUpperCase()) {
+
+    // Group alias codes that share the same email (e.g. SHARM10 / SHARMIE10 / SHARMINE10)
+    let group = [creator];
+    if (creator.email) {
+      const { data: siblings } = await supabase
+        .from("creators")
+        .select("id, name, code, creator_id, email")
+        .eq("email", creator.email);
+      if (siblings && siblings.length) group = siblings;
+    }
+
+    const validIds = group.map(c => c.creator_id?.toUpperCase()).filter(Boolean);
+    if (!validIds.includes(creatorIdInput.trim().toUpperCase())) {
       setIdMismatch(true); setLoading(false); return;
     }
-    setCreatorName(creator.name || creator.code);
+    const primary = group.find(c => c.creator_id) || creator;
+    setCreatorName(primary.name || primary.code);
 
+    const codes = group.map(c => c.code);
     const { data: revenueData } = await supabase
       .from("creator_revenue")
       .select("*")
-      .ilike("creator_code", creator.code);
+      .in("creator_code", codes);
 
     // Track latest sync timestamp from Google Sheets
     let latestSync: Date | null = null;
@@ -100,7 +114,17 @@ const Index = () => {
     MONTHS.forEach(m => { monthMap[m] = emptyRow(m); });
     revenueData?.forEach((r: any) => {
       if (monthMap[r.month]) {
-        monthMap[r.month] = mapRevenueRow(r);
+        const mapped = mapRevenueRow(r);
+        const agg = monthMap[r.month];
+        agg.rooms_bookings += mapped.rooms_bookings;
+        agg.rooms_gna += mapped.rooms_gna;
+        agg.rooms_revenue += mapped.rooms_revenue;
+        agg.tours_bookings += mapped.tours_bookings;
+        agg.tours_revenue += mapped.tours_revenue;
+        agg.events_revenue += mapped.events_revenue;
+        agg.allin_bookings += mapped.allin_bookings;
+        agg.allin_commission += mapped.allin_commission;
+        agg.allin_pending += mapped.allin_pending;
       }
     });
 

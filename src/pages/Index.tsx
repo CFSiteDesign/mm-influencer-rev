@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import AnimatedStatsGraphic from "@/components/AnimatedStatsGraphic";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 import PoweredByTheoroX from "@/components/PoweredByTheoroX";
+import CommissionClaim from "@/components/CommissionClaim";
 
 interface RevenueRow {
   month: string;
@@ -225,6 +226,10 @@ const Index = () => {
               <span className="text-primary font-display font-bold text-sm group-hover:translate-x-1 transition-transform">View →</span>
             </div>
           </Link>
+
+          <div className="mt-4 max-w-4xl mx-auto">
+            <CommissionClaim />
+          </div>
         </div>
 
         <PoweredByTheoroX />
@@ -359,6 +364,9 @@ const Index = () => {
                 })}
               </tbody>
             </table>
+          </div>
+          <div className="mt-6">
+            <CommissionClaim />
           </div>
         </div>
       </div>

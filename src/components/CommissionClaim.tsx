@@ -1,15 +1,22 @@
 import { FileText } from "lucide-react";
+import affiliateBreakdown from "@/assets/affiliate-breakdown.png";
 
 const COMMISSION_PDF_URL =
   "https://madmonkey-wp.sgp1.cdn.digitaloceanspaces.com/creator-hub-commission-agreement.pdf";
 
 /**
+ * Affiliate breakdown diagram (from the welcome email) above a
  * "How to claim my Commission" button linking to the commission agreement PDF.
- * The affiliate breakdown diagram (from the welcome email) sits above the button
- * once supplied.
+ * Shown at the bottom of both the landing page and the earnings page.
  */
 const CommissionClaim = () => (
-  <div className="flex flex-col items-center gap-3">
+  <div className="flex flex-col items-center gap-4">
+    <img
+      src={affiliateBreakdown}
+      alt="Affiliate breakdown: what each product pays creators"
+      className="w-full max-w-md rounded-xl border border-border"
+      loading="lazy"
+    />
     <a
       href={COMMISSION_PDF_URL}
       target="_blank"

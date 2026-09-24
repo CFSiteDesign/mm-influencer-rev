@@ -14,7 +14,7 @@ const CommissionClaim = () => (
     <img
       src={affiliateBreakdown}
       alt="Affiliate breakdown: what each product pays creators"
-      className="w-full max-w-md rounded-xl border border-border"
+      className="w-full max-w-md"
       loading="lazy"
     />
     <a

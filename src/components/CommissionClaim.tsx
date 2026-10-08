@@ -27,6 +27,16 @@ const CommissionClaim = () => (
       <FileText className="w-4 h-4" />
       How to claim my Commission
     </a>
+    {/* Claim deadline notice (Mad Monkey, Oct 2026). */}
+    <p className="max-w-md text-center text-[11px] leading-snug text-muted-foreground">
+      <span className="font-semibold">Important:</span> All commissions must be claimed within 3 months of being
+      awarded via invoice. For the avoidance of doubt, all commissions awarded in January must be invoiced by
+      11th April. Full terms and conditions{" "}
+      <a href={COMMISSION_PDF_URL} target="_blank" rel="noopener noreferrer" className="underline text-primary">
+        here
+      </a>
+      .
+    </p>
   </div>
 );
 

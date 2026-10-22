@@ -9,8 +9,10 @@ import AnimatedStatsGraphic from "@/components/AnimatedStatsGraphic";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 import PoweredByTheoroX from "@/components/PoweredByTheoroX";
 import CommissionClaim from "@/components/CommissionClaim";
+import { commissionTotal, commissionDealNote } from "@/lib/commission";
 
 interface RevenueRow {
+  commission: number;
   month: string;
   rooms_bookings: number;
   rooms_gna: number;
@@ -26,6 +28,7 @@ interface RevenueRow {
 // Map creator_revenue columns to our internal format
 function mapRevenueRow(r: any): RevenueRow {
   return {
+    commission: commissionTotal(r.creator_code, r.month, Number(r.rd_room_revenue) || 0, Number(r.hgl_revenue) || 0, Number(r.events_revenue) || 0, Number(r.allin_commission) || 0),
     month: r.month,
     rooms_bookings: r.rd_bookings ?? 0,
     rooms_gna: r.rd_gna ?? 0,
@@ -42,19 +45,20 @@ function mapRevenueRow(r: any): RevenueRow {
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 const emptyRow = (m: string): RevenueRow => ({
+  commission: 0,
   month: m,
   rooms_bookings: 0, rooms_gna: 0, rooms_revenue: 0,
   tours_bookings: 0, tours_revenue: 0, events_revenue: 0,
   allin_bookings: 0, allin_commission: 0, allin_pending: 0,
 });
 
-const commissionForRow = (r: RevenueRow) =>
-  (r.rooms_revenue + r.tours_revenue + r.events_revenue) * 0.1 + r.allin_commission;
+const commissionForRow = (r: RevenueRow) => r.commission;
 
 const Index = () => {
   const [code, setCode] = useState("");
   const [creatorIdInput, setCreatorIdInput] = useState("");
   const [creatorName, setCreatorName] = useState("");
+  const [dealNote, setDealNote] = useState<string | null>(null);
   const [revenue, setRevenue] = useState<RevenueRow[]>([]);
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [searched, setSearched] = useState(false);
@@ -95,6 +99,7 @@ const Index = () => {
     setCreatorName(primary.name || primary.code);
 
     const codes = group.map(c => c.code);
+    setDealNote(codes.map(commissionDealNote).find(Boolean) || null);
     const { data: revenueData } = await supabase
       .from("creator_revenue")
       .select("*")
@@ -116,6 +121,7 @@ const Index = () => {
       if (monthMap[r.month]) {
         const mapped = mapRevenueRow(r);
         const agg = monthMap[r.month];
+        agg.commission += mapped.commission;
         agg.rooms_bookings += mapped.rooms_bookings;
         agg.rooms_gna += mapped.rooms_gna;
         agg.rooms_revenue += mapped.rooms_revenue;
@@ -322,7 +328,7 @@ const Index = () => {
               </div>
             </div>
             <p className="mt-2 text-[10px] text-muted-foreground text-center px-2">
-              Beds, Travel + Tours and Events pay 10% of revenue. ALL IN pays a flat fee per trip booking.
+              {dealNote || "Beds, Travel + Tours and Events pay 10% of revenue. ALL IN pays a flat fee per trip booking."}
             </p>
           </div>
 

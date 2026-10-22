@@ -6,6 +6,7 @@ import heartBadge from "@/assets/heart-badge.png";
 import lightningBadge from "@/assets/lightning-badge.png";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 import PoweredByTheoroX from "@/components/PoweredByTheoroX";
+import { commissionRate } from "@/lib/commission";
 
 /**
  * Supabase/PostgREST caps a single response at 1000 rows. creator_revenue holds
@@ -91,8 +92,9 @@ const Leaderboard = () => {
         const key = (r.creator_code || "").toUpperCase();
         if (!map[key]) return;
         if (period === "month" && r.month !== CURRENT_MONTH) return;
-        const rooms = (Number(r.rd_room_revenue) || 0) * 0.1;
-        const tours = ((Number(r.hgl_revenue) || 0) + (Number(r.events_revenue) || 0)) * 0.1;
+        const rate = commissionRate(key, r.month);
+        const rooms = (Number(r.rd_room_revenue) || 0) * rate;
+        const tours = ((Number(r.hgl_revenue) || 0) + (Number(r.events_revenue) || 0)) * rate;
         const allin = Number(r.allin_commission) || 0;
         map[key].roomsCommission += rooms;
         map[key].toursCommission += tours;

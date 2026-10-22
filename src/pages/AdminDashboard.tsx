@@ -7,6 +7,7 @@ import heartBadge from "@/assets/heart-badge.png";
 import { toast } from "sonner";
 import madMonkeyLogo from "@/assets/mad-monkey-logo.png";
 import PoweredByTheoroX from "@/components/PoweredByTheoroX";
+import { commissionRate, commissionTotal, commissionDealNote } from "@/lib/commission";
 
 /**
  * Supabase/PostgREST caps a single response at 1000 rows. creator_revenue holds
@@ -287,10 +288,7 @@ const AdminDashboard = () => {
       const cid = codeToId[(r.creator_code || "").toUpperCase()];
       if (!cid) return;
       totals[cid] = (totals[cid] || 0)
-        + Number(r.rd_room_revenue || 0) * 0.1
-        + Number(r.hgl_revenue || 0) * 0.1
-        + Number(r.events_revenue || 0) * 0.1
-        + Number(r.allin_commission || 0);
+        + commissionTotal(r.creator_code, r.month, Number(r.rd_room_revenue || 0), Number(r.hgl_revenue || 0), Number(r.events_revenue || 0), Number(r.allin_commission || 0));
     });
     setCreatorTotals(totals);
   };
@@ -532,6 +530,10 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
+              {commissionDealNote(selectedCreator.code) && (
+                <p className="text-sm text-muted-foreground mb-4">{commissionDealNote(selectedCreator.code)}</p>
+              )}
+
               {/* Rooms & Dorms */}
               <div className="mb-8">
                 <h3 className="text-lg font-bold font-display text-secondary mb-3 flex items-center gap-2">
@@ -545,7 +547,7 @@ const AdminDashboard = () => {
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground"># Bookings</th>
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">GNA</th>
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">Room Revenue ($)</th>
-                        <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">10% ($)</th>
+                        <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">{commissionDealNote(selectedCreator.code) ? "Commission ($)" : "10% ($)"}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -561,7 +563,7 @@ const AdminDashboard = () => {
                           <td className="px-4 py-2 text-right">
                             <input type="number" step="0.01" value={r.rooms_revenue ? Number(r.rooms_revenue).toFixed(2) : ""} onChange={e => updateRevenue(r.month, "rooms_revenue", e.target.value)} className="w-28 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
                           </td>
-                          <td className="px-4 py-2 text-right text-sm font-display font-medium text-secondary">${(Number(r.rooms_revenue) * 0.1).toFixed(2)}</td>
+                          <td className="px-4 py-2 text-right text-sm font-display font-medium text-secondary">${(Number(r.rooms_revenue) * commissionRate(selectedCreator.code, r.month)).toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -581,7 +583,7 @@ const AdminDashboard = () => {
                         <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Month</th>
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground"># Bookings</th>
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">HGL Revenue ($)</th>
-                        <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">10% ($)</th>
+                        <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">{commissionDealNote(selectedCreator.code) ? "Commission ($)" : "10% ($)"}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -594,7 +596,7 @@ const AdminDashboard = () => {
                           <td className="px-4 py-2 text-right">
                             <input type="number" step="0.01" value={r.tours_revenue ? Number(r.tours_revenue).toFixed(2) : ""} onChange={e => updateRevenue(r.month, "tours_revenue", e.target.value)} className="w-28 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
                           </td>
-                          <td className="px-4 py-2 text-right text-sm font-display font-medium text-accent">${(Number(r.tours_revenue) * 0.1).toFixed(2)}</td>
+                          <td className="px-4 py-2 text-right text-sm font-display font-medium text-accent">${(Number(r.tours_revenue) * commissionRate(selectedCreator.code, r.month)).toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -613,7 +615,7 @@ const AdminDashboard = () => {
                       <tr className="bg-muted">
                         <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Month</th>
                         <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">Events Revenue ($)</th>
-                        <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">10% ($)</th>
+                        <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">{commissionDealNote(selectedCreator.code) ? "Commission ($)" : "10% ($)"}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -623,7 +625,7 @@ const AdminDashboard = () => {
                           <td className="px-4 py-2 text-right">
                             <input type="number" step="0.01" value={r.events_revenue ? Number(r.events_revenue).toFixed(2) : ""} onChange={e => updateRevenue(r.month, "events_revenue", e.target.value)} className="w-28 bg-card border border-border rounded px-2 py-1 text-right text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
                           </td>
-                          <td className="px-4 py-2 text-right text-sm font-display font-medium text-primary">${(Number(r.events_revenue) * 0.1).toFixed(2)}</td>
+                          <td className="px-4 py-2 text-right text-sm font-display font-medium text-primary">${(Number(r.events_revenue) * commissionRate(selectedCreator.code, r.month)).toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>

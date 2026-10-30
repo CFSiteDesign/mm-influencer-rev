@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { registerCreator } from "../_shared/creator-linking.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -44,10 +45,10 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Missing or invalid 'creators' array" }, 400);
   }
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-  );
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return jsonResponse({ error: "Service configuration missing" }, 500);
+  const supabase = createClient(url, key);
 
   const rows: any[] = [];
 
@@ -96,24 +97,30 @@ Deno.serve(async (req) => {
 
   // Auto-add new creator codes to the creators table
   const uniqueCodes = [...new Set(dedupedRows.map((r) => r.creator_code))];
-  const { data: existingCreators } = await supabase
+  const { data: existingCreators, error: existingError } = await supabase
     .from("creators")
     .select("code")
     .in("code", uniqueCodes);
+  if (existingError) return jsonResponse({ error: existingError.message }, 500);
 
   const existingCodes = new Set((existingCreators || []).map((c: any) => c.code));
-  const newCodes = uniqueCodes.filter((code) => !existingCodes.has(code));
-
   let creatorsAdded = 0;
-  if (newCodes.length > 0) {
-    const newCreators = newCodes.map((code) => ({
-      code,
-      name: code.replace(/10$/, ""),
-    }));
-    const { error: creatorError } = await supabase.from("creators").insert(newCreators);
-    if (!creatorError) {
-      creatorsAdded = newCodes.length;
+  let creatorsLinked = 0;
+  const identityMap = new Map<string, any>();
+  for (const creator of body.creators) {
+    if (typeof creator.code === "string") identityMap.set(creator.code.trim().toUpperCase(), creator);
+  }
+  try {
+    for (const code of uniqueCodes) {
+      const identity = identityMap.get(code);
+      // Code-only existing feeds stay fast and retain their current behaviour.
+      if (existingCodes.has(code) && !identity?.creator_id && !identity?.email) continue;
+      const result = await registerCreator(supabase, { code, creator_id: identity?.creator_id, email: identity?.email, name: identity?.name });
+      if (result.added) creatorsAdded++;
+      if (result.linked) creatorsLinked++;
     }
+  } catch (error) {
+    return jsonResponse({ error: error instanceof Error ? error.message : "Creator identity reconciliation failed" }, 409);
   }
 
   // Upsert in chunks to stay well within statement limits
@@ -132,5 +139,6 @@ Deno.serve(async (req) => {
     synced: dedupedRows.length,
     duplicatesMerged: rows.length - dedupedRows.length,
     creatorsAdded,
+    creatorsLinked,
   });
 });

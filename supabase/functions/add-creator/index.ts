@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { registerCreator } from "../_shared/creator-linking.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -30,7 +31,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { code, name, creator_id } = body;
+    const { code, name, creator_id, email } = body;
 
     // Validate required fields
     if (!code || typeof code !== "string" || code.trim().length === 0) {
@@ -46,31 +47,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    const url = Deno.env.get("SUPABASE_URL");
+    const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!url || !key) throw new Error("Service configuration missing");
+    const supabase = createClient(url, key);
+    const result = await registerCreator(supabase, { code, name, creator_id, email });
 
-    const { data, error } = await supabase.from("creators").insert({
-      code: code.trim().toUpperCase(),
-      name: name?.trim() || null,
-      creator_id: creator_id.trim().toUpperCase(),
-    }).select().single();
-
-    if (error) {
-      const status = error.message.includes("duplicate") ? 409 : 500;
-      return new Response(JSON.stringify({ error: error.message }), {
-        status,
-        headers: { ...CORS, "Content-Type": "application/json" },
-      });
-    }
-
-    return new Response(JSON.stringify({ success: true, creator: data }), {
-      status: 201,
+    return new Response(JSON.stringify({ success: true, creator: result.creator, linked: result.linked }), {
+      status: result.added ? 201 : 200,
       headers: { ...CORS, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: "Invalid request body" }), {
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Creator registration failed" }), {
       status: 400,
       headers: { ...CORS, "Content-Type": "application/json" },
     });

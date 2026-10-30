@@ -1,3 +1,4 @@
 # Architecture rules
+- Creator Hub and Sheets identity-bearing registrations use supabase/functions/_shared/creator-linking.ts; retain old code rows and link via stable Creator ID or email so historical earnings stay visible without guessing identity from code names.
 - Use src/lib/commission.ts for payable percentage commission across creator, leaderboard and admin views so dated creator deals remain consistent; ALL IN is added separately without percentage multiplication.
 - Month-only creator_revenue records belong to the fixed active dataset year defined by REVENUE_YEAR; do not infer their earning year from sync timestamps or the current date, since that would reprice historical earnings. A year-aware data migration is required before supporting multiple revenue years.

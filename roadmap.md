@@ -1,3 +1,9 @@
+# Automatic creator code linking
+- [x] Link AUSSIESIN to Lucas's CH493 dashboard and verify sign-in.
+- [ ] Preserve creator identity and old code revenue on Creator Hub code changes.
+- [ ] Support identity-bearing Google Sheets code changes; report any source payload limitations.
+- [ ] Test automatic linking and deploy updated sync functions.
+
 # Commission deal
 - [x] Apply BALIPM10's dated rate consistently to creator, leaderboard and admin commission totals.
 - [x] Verify rate boundaries with six passing tests and check the standard creator dashboard remains unchanged.
